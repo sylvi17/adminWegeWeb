@@ -1,0 +1,376 @@
+/* src/pages/dashboard/DashboardPage.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #f0f0f0;
+  overflow-x: hidden;
+}
+
+/* ── ROOT ── */
+.dash-root {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.dash-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: #fff;
+  padding: 32px 0 24px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+
+.dash-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 24px;
+  cursor: pointer;
+  color: #999;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: all 0.2s;
+  border-radius: 0 50px 50px 0;
+  margin-right: 16px;
+}
+
+.dash-menu-item:hover {
+  background: #f0f9f8;
+  color: #26a69a;
+}
+
+.dash-menu-item.active {
+  background: #e8f5f3;
+  color: #26a69a;
+  border-left: 4px solid #26a69a;
+  padding-left: 20px;
+}
+
+.dash-menu-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+.dash-menu-label { font-size: 0.92rem; }
+
+.dash-logout {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 24px;
+  cursor: pointer;
+  color: #e53935;
+  font-weight: 700;
+  font-size: 0.92rem;
+  transition: background 0.2s;
+}
+.dash-logout:hover { background: #fff5f5; }
+
+/* ── MAIN CONTENT ── */
+.dash-main {
+  margin-left: 240px;
+  flex: 1;
+  padding: 24px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* ── SEARCH BAR ── */
+.dash-topbar {
+  display: flex;
+  justify-content: center;
+}
+
+.dash-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #e4e4e4;
+  border-radius: 50px;
+  padding: 11px 22px;
+  width: 380px;
+}
+
+.dash-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+  color: #555;
+  width: 100%;
+}
+
+.dash-search input::placeholder { color: #aaa; }
+
+/* ── HEADER ── */
+.dash-header { text-align: left; }
+
+.dash-overview-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #26a69a;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.dash-greeting {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.dash-subtitle {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* ── STAT CARDS ── */
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.dash-stat-card {
+  border-radius: 18px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 140px;
+  justify-content: center;
+}
+
+.dash-stat-icon {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.dash-stat-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.dash-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.dash-stat-suffix {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+/* ── BOTTOM ROW ── */
+.dash-bottom {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── CHART CARD ── */
+.dash-chart-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px 24px 20px;
+}
+
+.dash-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dash-chart-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #222;
+}
+
+.dash-chart-sub {
+  font-size: 0.8rem;
+  color: #bbb;
+  margin-top: 3px;
+}
+
+.dash-select {
+  border: 1px solid #ddd;
+  border-radius: 50px;
+  padding: 7px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  outline: none;
+  color: #555;
+  background: #fff;
+}
+
+/* Bar chart */
+.dash-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+}
+
+.dash-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.dash-bar {
+  width: 100%;
+  background: #26a69a;
+  border-radius: 6px 6px 0 0;
+  min-height: 4px;
+  transition: height 0.4s cubic-bezier(.22,1,.36,1);
+}
+
+.dash-bar.today { background: #e53935; }
+
+.dash-bar-label {
+  font-size: 0.72rem;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.dash-bar-label.today-label {
+  color: #e53935;
+  font-weight: 800;
+}
+
+/* ── AKTIVITAS CARD ── */
+.dash-activity-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-activity-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #222;
+}
+
+.dash-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dash-activity-item {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.dash-activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.dash-activity-text {
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.dash-activity-detail {
+  color: #26a69a;
+  font-weight: 700;
+}
+
+.dash-activity-time {
+  font-size: 0.7rem;
+  color: #bbb;
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+
+.dash-activity-btn {
+  background: #e0d5bc;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #555;
+  transition: background 0.2s;
+  text-align: center;
+}
+
+.dash-activity-btn:hover { background: #cfc4a6; }
+
+/* ── ACTION CARDS ── */
+.dash-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dash-action-card {
+  border-radius: 18px;
+  padding: 28px 28px 24px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dash-action-card.teal {
+  background: linear-gradient(135deg, #26a69a 0%, #4db6ac 100%);
+}
+
+.dash-action-card.green {
+  background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+}
+
+.dash-action-card h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.dash-action-card p {
+  font-size: 0.88rem;
+  opacity: 0.88;
+  line-height: 1.5;
+}
+
+.dash-action-card button {
+  margin-top: 12px;
+  align-self: flex-start;
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.8);
+  border-radius: 50px;
+  padding: 9px 22px;
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.dash-action-card button:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: #fff;
+}

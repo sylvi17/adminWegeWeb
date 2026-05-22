@@ -1,0 +1,124 @@
+/* src/pages/laporan/LaporanPage.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: #f0f0f0; }
+
+.l-root { display: flex; min-height: 100vh; }
+.l-main { margin-left: 240px; flex: 1; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+
+/* ── SIDEBAR ── */
+.l-sidebar {
+  width: 240px; min-height: 100vh; background: #fff;
+  padding: 32px 0 24px; display: flex; flex-direction: column;
+  position: fixed; left: 0; top: 0; bottom: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.06); z-index: 100;
+}
+.l-menu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 24px; cursor: pointer; color: #999;
+  font-weight: 600; font-size: 0.92rem;
+  border-radius: 0 50px 50px 0; margin-right: 16px; transition: all 0.2s;
+}
+.l-menu-item:hover  { background: #f0f9f8; color: #26a69a; }
+.l-menu-item.active { background: #e8f5f3; color: #26a69a; border-left: 4px solid #26a69a; padding-left: 20px; }
+.l-menu-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+.l-logout {
+  margin-top: auto; display: flex; align-items: center; gap: 14px;
+  padding: 13px 24px; cursor: pointer; color: #e53935;
+  font-weight: 700; font-size: 0.92rem; transition: background 0.2s;
+}
+.l-logout:hover { background: #fff5f5; }
+
+/* ── TOPBAR ── */
+.l-topbar { display: flex; justify-content: center; }
+.l-search {
+  display: flex; align-items: center; gap: 10px;
+  background: #e4e4e4; border-radius: 50px;
+  padding: 11px 22px; width: 380px;
+}
+.l-search input {
+  border: none; background: transparent; outline: none;
+  font-size: 0.9rem; font-family: 'Nunito', sans-serif; color: #555; width: 100%;
+}
+.l-search input::placeholder { color: #aaa; }
+
+/* ── HEADER ── */
+.l-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.l-title   { font-size: 2rem; font-weight: 800; color: #1a1a1a; }
+.l-subtitle{ color: #999; font-size: 0.9rem; margin-top: 6px; }
+.l-header-btns { display: flex; gap: 12px; align-items: center; }
+
+.l-btn-filter {
+  background: #fff; border: 1.5px solid #ddd; border-radius: 50px;
+  padding: 11px 22px; font-weight: 700; font-size: 0.9rem;
+  cursor: pointer; color: #444; font-family: 'Nunito', sans-serif;
+  transition: all 0.2s;
+}
+.l-btn-filter:hover { border-color: #26a69a; color: #26a69a; }
+
+.l-btn-unduh {
+  background: #1a5c54; color: #fff; border: none; border-radius: 50px;
+  padding: 12px 22px; font-weight: 700; font-size: 0.9rem;
+  cursor: pointer; font-family: 'Nunito', sans-serif;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 12px rgba(26,92,84,0.25);
+}
+.l-btn-unduh:hover { background: #26a69a; transform: translateY(-1px); }
+
+/* ── TABLE WRAP ── */
+.l-table-wrap {
+  background: #fff; border-radius: 18px;
+  overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.l-table-top {
+  padding: 20px 24px 16px; border-bottom: 1px solid #f0f0f0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.l-table-title { font-size: 0.85rem; font-weight: 800; color: #555; letter-spacing: 0.8px; }
+
+.l-filters { display: flex; gap: 8px; }
+.l-filter-btn {
+  border: 1px solid #e0e0e0; border-radius: 50px; padding: 7px 16px;
+  background: #fff; font-size: 0.82rem; cursor: pointer; color: #777;
+  font-weight: 600; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+}
+.l-filter-btn.active, .l-filter-btn:hover { background: #e8f5f3; border-color: #26a69a; color: #26a69a; }
+
+/* ── TABLE ── */
+.l-table { width: 100%; border-collapse: collapse; }
+.l-table thead tr { background: #fafafa; }
+.l-table th { padding: 14px 24px; font-size: 0.72rem; font-weight: 800; color: #bbb; text-align: left; letter-spacing: 0.8px; }
+.l-table td { padding: 18px 24px; font-size: 0.88rem; color: #444; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+.l-table tbody tr:last-child td { border-bottom: none; }
+.l-table tbody tr:hover { background: #fafafa; }
+
+.l-nama { font-weight: 700; color: #1a1a1a; font-size: 0.92rem; }
+.l-sub  { font-size: 0.75rem; color: #aaa; margin-top: 3px; }
+
+.l-badge { display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 0.78rem; font-weight: 700; }
+.l-badge.lancar { background: #d4f0ec; color: #00897b; }
+.l-badge.tidak  { background: #fde8e8; color: #e53935; }
+.l-badge.kurang { background: #fff3e0; color: #ef6c00; }
+
+.l-empty { text-align: center; padding: 40px; color: #aaa; font-size: 0.9rem; }
+
+/* ── FOOTER / PAGINATION ── */
+.l-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px; border-top: 1px solid #f0f0f0;
+}
+.l-page-info { font-size: 0.82rem; color: #aaa; }
+.l-pagination { display: flex; gap: 6px; align-items: center; }
+.l-pagination button {
+   width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid #eee; background: #fff;
+  font-family: 'Nunito', sans-serif; font-size: 0.85rem;
+  cursor: pointer; color: #555; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.l-pagination button:hover:not(:disabled) { background: #e8f5f3; border-color: #26a69a; color: #26a69a; }
+.l-pagination button.active { background: #26a69a; color: #fff; border-color: #26a69a; font-weight: 800; }
+.l-pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
