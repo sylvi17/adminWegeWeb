@@ -1,11 +1,11 @@
 // src/pages/auth/LoginPage.jsx
-
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./LoginPage.css";
+import { useLogin } from "../../hooks/useLogin";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 
 const MailIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="16" rx="2"/>
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
   </svg>
@@ -18,97 +18,69 @@ const LockIcon = () => (
   </svg>
 );
 
-const EyeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-
-const EyeOffIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-);
-
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const navigate         = useNavigate();
+  const { login, loading, error, setError } = useLogin();
 
-  const handleLogin = () => {
-    setError("");
+  async function handleLogin(e) {
+    e.preventDefault();
 
-    if (!email || !password) {
+    const form     = e.currentTarget;
+    const username    = form.username.value.trim();
+    const password = form.password.value;
+
+    // Validasi sisi klien
+    if (!username || !password) {
       setError("Email dan password tidak boleh kosong.");
       return;
     }
-
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Format email tidak valid.");
-      return;
-    }
-
-    // Cek kredensial manual
-    if (email === "admin@binatilawah.com" && password === "admin123") {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/dashboard");
-      }, 800);
-    } else {
-      setError("Email atau password salah.");
-    }
-  };
+    const result = await login(username, password);
+    if (result) navigate("/dashboard");
+  }
 
   return (
-    <div className="login-root">
-      <div className="login-top" />
-      <div className="login-bottom" />
+    <div className="relative flex min-h-screen items-center justify-center bg-gray-100">
+      {/* Background split */}
+      <div className="fixed inset-x-0 top-0 h-[52vh] rounded-b-[40px] bg-gradient-to-br from-teal-400 via-teal-500 to-teal-700 shadow-lg" />
+      <div className="fixed inset-x-0 bottom-0 h-[52vh] bg-gray-100" />
 
-      <div className="login-card">
-        <h1 className="login-title">Login</h1>
+      {/* Card */}
+      <form
+        onSubmit={handleLogin}
+        noValidate
+        className="relative z-10 flex w-[340px] flex-col gap-5 rounded-3xl bg-white px-9 py-10 shadow-2xl
+                   animate-[cardIn_0.5s_cubic-bezier(0.22,1,0.36,1)_both]"
+      >
+        <h1 className="text-center text-3xl font-extrabold tracking-tight text-teal-700">
+          Login
+        </h1>
 
-        <div className="input-wrapper">
-          <span className="input-icon"><MailIcon /></span>
-          <input
-            className="input-field"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleLogin()}
-            autoComplete="email"
-          />
-        </div>
+        <Input
+          name="username"
+          type="text"
+          placeholder="Username"
+          icon={<MailIcon />}
+          autoComplete="username"
+          error={error && error.toLowerCase().includes("username") ? error : undefined}
+        />
 
-        <div className="input-wrapper">
-          <span className="input-icon"><LockIcon /></span>
-          <input
-            className="input-field"
-            type={showPass ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleLogin()}
-            autoComplete="current-password"
-          />
-          <button className="toggle-eye" onClick={() => setShowPass(v => !v)} tabIndex={-1}>
-            {showPass ? <EyeOffIcon /> : <EyeIcon />}
-          </button>
-        </div>
+        <Input
+          name="password"
+          type="password"
+          placeholder="Password"
+          icon={<LockIcon />}
+          autoComplete="current-password"
+        />
 
-        {error && <p className="error-msg">{error}</p>}
+        {/* Error umum (bukan field-specific) */}
+        {error && !error.toLowerCase().includes("username") && (
+          <p className="text-center text-xs text-red-500 -mt-2">{error}</p>
+        )}
 
-        <button className="login-btn" onClick={handleLogin} disabled={loading}>
+        <Button type="submit" disabled={loading} className="mt-1 w-full">
           {loading ? "Masuk..." : "Log in"}
-        </button>
-      </div>
+        </Button>
+      </form>
     </div>
   );
 }
