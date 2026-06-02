@@ -7,7 +7,6 @@ const statusStyles = {
 export default function PengajarTable({
   data,
   page,
-  displayed,
   totalPage,
   onPageChange,
 }) {
