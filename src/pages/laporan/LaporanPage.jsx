@@ -1,6 +1,10 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import "./LaporanPage.css";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import PageHeader from "../../components/layout/Header";
+import StatusFilter from "../../components/ui/StatusFilter";
+import ReportTable from "../../components/laporan/ReportTable";
 
 const SURAH    = ["An-Naba","Al-Baqarah","Al-Alaq","Al-Asr","Al-Ikhlas","Al-Falaq","An-Nas","Al-Kafirun","Al-Maun","Al-Fil"];
 const KELAS    = ["Kelas A","Kelas B","Kelas C","Kelas D","Kelas E"];
@@ -31,135 +35,73 @@ const STATUS_CLASS = { "Lancar": "lancar", "Tidak Lancar": "tidak", "Kurang Lanc
 const PER_PAGE = 8;
 
 export default function LaporanPage() {
-  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Semua");
-  const [page,   setPage]   = useState(1);
+  const [page, setPage] = useState(1);
 
-  const filtered = useMemo(() =>
-    LAPORAN.filter(d =>
-      (status === "Semua" || d.status === status) &&
-      [d.nama, d.pengajar, d.surah].some(v =>
-        v.toLowerCase().includes(search.toLowerCase())
-      )
-    ), [search, status]
+  const filtered = useMemo(
+    () =>
+      LAPORAN.filter(
+        (d) =>
+          (status === "Semua" || d.status === status) &&
+          [d.nama, d.pengajar, d.surah].some((v) =>
+            v.toLowerCase().includes(search.toLowerCase())
+          )
+      ),
+    [search, status]
   );
 
   const totalPage = Math.ceil(filtered.length / PER_PAGE);
-  const rows      = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  const rows = filtered.slice(
+    (page - 1) * PER_PAGE,
+    page * PER_PAGE
+  );
 
   return (
-    <div className="l-root">
+    <div className="flex min-h-screen bg-[#f0f0f0]">
+      <Sidebar menus={MENUS} />
 
-      <aside className="l-sidebar">
-        {MENUS.map(m => (
-          <div
-            key={m.path}
-            className={`l-menu-item ${m.path === "/laporan" ? "active" : ""}`}
-            onClick={() => navigate(m.path)}
-          >
-            <span className="l-menu-icon">{m.icon}</span>
-            <span>{m.label}</span>
-          </div>
-        ))}
-        <div className="l-logout" onClick={() => navigate("/")}>
-          <span>🚪</span><span>Logout</span>
-        </div>
-      </aside>
+      <main className="ml-[240px] flex-1 px-8 pt-6 pb-12 flex flex-col gap-6">
 
-      <main className="l-main">
+        <Navbar
+          onChange={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+        />
 
-        <div className="l-topbar">
-          <div className="l-search">
-            <span>🔍</span>
-            <input
-              placeholder="Cari santri atau laporan......"
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1); }}
+        <PageHeader
+          title="Laporan Progress Santri"
+          subtitle="Berikut adalah ringkasan perkembangan hafalan dan mingguan"
+        >
+          <button className="rounded-full border border-gray-300 px-5 py-2 font-bold">
+            ☰ Filter Laporan
+          </button>
+
+          <button className="rounded-full bg-[#1a5c54] text-white px-5 py-2 font-bold">
+            ⬇ Unduh Rekap PDF
+          </button>
+        </PageHeader>
+
+        <div className="bg-white rounded-[18px] shadow-sm overflow-hidden">
+
+          <div className="flex items-center justify-between px-6 py-5 border-b">
+            <h2 className="text-sm font-extrabold tracking-wide text-gray-600">
+              RINCIAN PROGRESS HARIAN
+            </h2>
+
+            <StatusFilter
+              current={status}
+              onChange={(value) => {
+                setStatus(value);
+                setPage(1);
+              }}
             />
           </div>
+          <ReportTable rows={rows} />
         </div>
 
-        <div className="l-header">
-          <div>
-            <h1 className="l-title">Laporan Progress Santri</h1>
-            <p className="l-subtitle">Berikut adalah ringkasan perkembangan hafalan dan mingguan</p>
-          </div>
-          <div className="l-header-btns">
-            <button className="l-btn-filter">☰ Filter Laporan</button>
-            <button className="l-btn-unduh">⬇ Unduh Rekap PDF</button>
-          </div>
-        </div>
-
-        <div className="l-table-wrap">
-          <div className="l-table-top">
-            <h2 className="l-table-title">RINCIAN PROGRESS HARIAN</h2>
-            <div className="l-filters">
-              {["Semua","Lancar","Kurang Lancar","Tidak Lancar"].map(s => (
-                <button
-                  key={s}
-                  className={`l-filter-btn ${status === s ? "active" : ""}`}
-                  onClick={() => { setStatus(s); setPage(1); }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <table className="l-table">
-            <thead>
-              <tr>
-                <th>NAMA SANTRI</th>
-                <th>SURAH / JUZ</th>
-                <th>HALAMAN</th>
-                <th>STATUS KELANCARAN</th>
-                <th>PENGAJAR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(d => (
-                <tr key={d.id}>
-                  <td>
-                    <div className="l-nama">{d.nama}</div>
-                    <div className="l-sub">{d.kelas} · {d.jilid}</div>
-                  </td>
-                  <td>{d.surah}</td>
-                  <td>{d.halaman}</td>
-                  <td>
-                    <span className={`l-badge ${STATUS_CLASS[d.status]}`}>
-                      {d.status}
-                    </span>
-                  </td>
-                  <td>{d.pengajar}</td>
-                </tr>
-              ))}
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="l-empty">Tidak ada data ditemukan.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {/* Pagination — semua nomor ditampilkan */}
-          <div className="l-footer">
-            <span className="l-page-info">Halaman {page} dari {totalPage}</span>
-            <div className="l-pagination">
-              <button onClick={() => setPage(p => p - 1)} disabled={page === 1}>‹</button>
-              {Array.from({ length: totalPage }, (_, i) => i + 1).map(p => (
-                <button
-                  key={p}
-                  className={page === p ? "active" : ""}
-                  onClick={() => setPage(p)}
-                >
-                  {p}
-                </button>
-              ))}
-              <button onClick={() => setPage(p => p + 1)} disabled={page === totalPage}>›</button>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );
