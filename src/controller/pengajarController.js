@@ -1,5 +1,3 @@
-// src/controller/pengajarController.js
-
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchPengajar(setLoading, setError, setPengajar) {
@@ -29,4 +27,29 @@ export async function fetchPengajar(setLoading, setError, setPengajar) {
   } finally {
     setLoading(false);
   }
+}
+
+export async function tambahGuru(formData) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/admin/users`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
+    },
+    body: JSON.stringify({
+      ...formData,
+      role: "GURU",
+    }),
+  });
+
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error(json.message || `Gagal menambah guru (status ${res.status})`);
+  }
+
+  return await res.json();
 }
