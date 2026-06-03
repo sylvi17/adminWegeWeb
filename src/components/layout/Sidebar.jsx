@@ -1,15 +1,16 @@
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { useAuth } from "../../context/AuthContext";
 const menus = [
-  { label: "Dashboard",        icon: "⊞", path: "/dashboard" },
-  { label: "Data Santri",      icon: "🎓", path: "/santri"    },
-  { label: "Data Pengajar",    icon: "📋", path: "/pengajar"  },
-  { label: "Laporan Progress", icon: "📊", path: "/laporan"   },
+  { label: "Dashboard", icon: "⊞", path: "/dashboard" },
+  { label: "Data Santri", icon: "🎓", path: "/santri" },
+  { label: "Data Pengajar", icon: "📋", path: "/pengajar" },
+  { label: "Laporan Progress", icon: "📊", path: "/laporan" },
 ];
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { logout } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white shadow-sm flex flex-col py-8 z-50">
@@ -35,7 +36,10 @@ export default function Sidebar() {
       </nav>
 
       <button
-        onClick={() => navigate("/")}
+        onClick={() => {
+          logout();
+          navigate("/");
+        }}
         className="flex items-center gap-3.5 px-6 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
       >
         <span className="text-lg">🚪</span>

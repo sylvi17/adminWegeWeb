@@ -1,29 +1,11 @@
 // src/controller/pengajarController.js
-
-const BASE_URL = import.meta.env.VITE_API_URL;
-
+import { guruController } from "./guruController";
 export async function fetchPengajar(setLoading, setError, setPengajar) {
   setLoading(true);
   setError(null);
   try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(`${BASE_URL}/admin/users`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
-      },
-    });
-
-    if (!res.ok) throw new Error(`Gagal mengambil data (status ${res.status})`);
-
-    const json = await res.json();
-    const allUsers = json.data || [];
-    const guruOnly = allUsers.filter((u) => u.role === "GURU");
-    setPengajar(guruOnly);
+    const data = await guruController.getAll();
+    setPengajar(data);
   } catch (err) {
     setError(err.message);
   } finally {

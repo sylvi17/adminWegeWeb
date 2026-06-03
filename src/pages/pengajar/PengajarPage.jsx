@@ -1,17 +1,10 @@
+import { useState } from "react";
 import Sidebar from "../../components/layout/Sidebar";
 import PengajarHeader from "../../components/pengajar/PengajarHeader";
 import PengajarStats from "../../components/pengajar/PengajarStats";
 import PengajarAttendance from "../../components/pengajar/PengajarAtttendance";
 import PengajarActivityLog from "../../components/pengajar/PengajarActivityLog";
-import { useState, useEffect } from "react";
-import { fetchPengajar } from "../../controller/pengajarController";
-
-const MENUS = [
-  { label: "Dashboard", icon: "⊞", path: "/dashboard" },
-  { label: "Data Santri", icon: "🎓", path: "/santri" },
-  { label: "Data Pengajar", icon: "📋", path: "/pengajar" },
-  { label: "Laporan Progress", icon: "📊", path: "/laporan" },
-];
+import { useGuruList } from "../../hooks/useGuruList";
 
 const PER_PAGE = 10;
 
@@ -31,9 +24,9 @@ function PengajarTable({ data, page, totalPage, onPageChange, loading, error, on
           <thead className="bg-gray-50 text-xs text-gray-400 uppercase tracking-wider">
             <tr>
               <th className="px-6 py-3 text-left">Nama Ustadz/Ustadzah</th>
-              <th className="px-6 py-3 text-left">Email</th>
               <th className="px-6 py-3 text-left">No. HP</th>
               <th className="px-6 py-3 text-left">Alamat</th>
+              <th className="px-6 py-3 text-left">Jumlah Murid</th>
               <th className="px-6 py-3 text-left">Status</th>
               <th className="px-6 py-3 text-left">Aksi</th>
             </tr>
@@ -61,19 +54,19 @@ function PengajarTable({ data, page, totalPage, onPageChange, loading, error, on
                 </td>
               </tr>
             ) : (
-              data.map((u) => (
-                <tr key={u.id} className="border-t border-gray-50 hover:bg-gray-50 transition">
+              data.map((g) => (
+                <tr key={g.id} className="border-t border-gray-50 hover:bg-gray-50 transition">
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                        {initials(u.nama)}
+                        {initials(g.nama)}
                       </div>
-                      <span className="font-medium text-gray-800">{u.nama}</span>
+                      <span className="font-medium text-gray-800">{g.nama}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 text-gray-500">{u.email}</td>
-                  <td className="px-6 py-3 text-gray-700">{u.guru?.no_hp || "—"}</td>
-                  <td className="px-6 py-3 text-gray-500">{u.guru?.alamat || "—"}</td>
+                  <td className="px-6 py-3 text-gray-700">{g.noHp}</td>
+                  <td className="px-6 py-3 text-gray-500">{g.alamat}</td>
+                  <td className="px-6 py-3 text-gray-700">{g.jumlahMurid} murid</td>
                   <td className="px-6 py-3">
                     <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">
                       Aktif
@@ -118,37 +111,25 @@ function PengajarTable({ data, page, totalPage, onPageChange, loading, error, on
 }
 
 export default function PengajarPage() {
-  const [pengajar, setPengajar] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
+  const { data: pengajarList, loading, error, refetch } = useGuruList();
 
   const today = new Date().toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
-  useEffect(() => {
-    fetchPengajar(setLoading, setError, setPengajar);
-  }, []);
-
-  const totalPage = Math.max(1, Math.ceil(pengajar.length / PER_PAGE));
-  const paginatedData = pengajar.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPage  = Math.max(1, Math.ceil(pengajarList.length / PER_PAGE));
+  const paginatedData = pengajarList.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   const stats = {
-    total: pengajar.length,
-    aktif: pengajar.length,
-    izin: 0,
+    total: pengajarList.length,
+    aktif: pengajarList.length,
+    izin:  0,
   };
 
   return (
-    <div
-      style={{ fontFamily: "'Nunito', sans-serif" }}
-      className="flex min-h-screen bg-[#f0f0f0]"
-    >
-      <Sidebar menus={MENUS} />
+    <div className="flex min-h-screen bg-[#f0f0f0] font-nunito">
+      <Sidebar />
 
       <main className="ml-60 flex-1 flex flex-col gap-6 px-8 pt-6 pb-12">
         <PengajarHeader />
@@ -167,7 +148,7 @@ export default function PengajarPage() {
           onPageChange={setPage}
           loading={loading}
           error={error}
-          onRefresh={() => fetchPengajar(setLoading, setError, setPengajar)}
+          onRefresh={refetch}
         />
 
         <div className="grid gap-5">

@@ -1,8 +1,8 @@
-// src/pages/auth/LoginPage.jsx
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "../../hooks/useLogin";
+import { useAuth } from "../../context/AuthContext";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
+import { useState } from "react";
 
 const MailIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -10,7 +10,6 @@ const MailIcon = () => (
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
   </svg>
 );
-
 const LockIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2"/>
@@ -19,23 +18,32 @@ const LockIcon = () => (
 );
 
 export default function LoginPage() {
-  const navigate         = useNavigate();
-  const { login, loading, error, setError } = useLogin();
+  const navigate          = useNavigate();
+  const { login }         = useAuth();
+  const [error,  setError]   = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin(e) {
     e.preventDefault();
-
     const form     = e.currentTarget;
-    const username    = form.username.value.trim();
+    const username = form.username.value.trim();
     const password = form.password.value;
 
-    // Validasi sisi klien
     if (!username || !password) {
-      setError("Email dan password tidak boleh kosong.");
+      setError("Username dan password tidak boleh kosong.");
       return;
     }
-    const result = await login(username, password);
-    if (result) navigate("/dashboard");
+
+    setError("");
+    setLoading(true);
+    try {
+      await login(username, password);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message ?? "Tidak dapat terhubung ke server.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -63,7 +71,6 @@ export default function LoginPage() {
           autoComplete="username"
           error={error && error.toLowerCase().includes("username") ? error : undefined}
         />
-
         <Input
           name="password"
           type="password"
@@ -72,7 +79,7 @@ export default function LoginPage() {
           autoComplete="current-password"
         />
 
-        {/* Error umum (bukan field-specific) */}
+        {/* Error umum */}
         {error && !error.toLowerCase().includes("username") && (
           <p className="text-center text-xs text-red-500 -mt-2">{error}</p>
         )}
