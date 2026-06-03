@@ -9,6 +9,6 @@ export async function fetchPengajar(setLoading, setError, setPengajar) {
   } catch (err) {
     setError(err.message);
   } finally {
-    setLoading(false);
+    setLoading(false);n
   }
 }

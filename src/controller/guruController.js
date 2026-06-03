@@ -11,4 +11,13 @@ export const guruController = {
       jumlahMurid: g.murid.length,
     }));
   },
+
+  create: async (formData) => {
+    const res = await guruService.create({
+      ...formData,
+      role: "GURU",
+      umur: Number(formData.umur),
+    });
+    return res.data;
+  },
 };
