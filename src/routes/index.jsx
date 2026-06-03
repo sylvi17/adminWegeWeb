@@ -1,18 +1,47 @@
 import { createBrowserRouter } from "react-router-dom";
-import LoginPage     from "../pages/auth/LoginPage";
-import DashboardPage from "../pages/dashboard/DashboardPage";
-import SantriPage    from "../pages/santri/SantriPage";
-import DetailSantri  from "../pages/santri/DetailSantri";
-import PengajarPage  from "../pages/pengajar/PengajarPage";
-import LaporanPage   from "../pages/laporan/LaporanPage";
-
+import RootLayout from "../RootLayout";
+import ProtectedRoute from "../components/ProtectedRoute";
+import LoginPage        from "../pages/auth/LoginPage";
+import UnauthorizedPage from "../pages/auth/UnauthroizedPage";
+import DashboardPage    from "../pages/dashboard/DashboardPage";
+import SantriPage       from "../pages/santri/SantriPage";
+import DetailSantri     from "../pages/santri/DetailSantri";
+import PengajarPage     from "../pages/pengajar/PengajarPage";
+import LaporanPage      from "../pages/laporan/LaporanPage";
+ 
 const router = createBrowserRouter([
-  { path: "/",           element: <LoginPage />     },
-  { path: "/dashboard",  element: <DashboardPage /> },
-  { path: "/santri",     element: <SantriPage />    },
-  { path: "/santri/:id", element: <DetailSantri />  },
-  { path: "/pengajar",   element: <PengajarPage />  },
-  { path: "/laporan",    element: <LaporanPage />   },
+  {
+    element: <RootLayout />, // AuthProvider ada di sini, wraps semua route
+    children: [
+      { path: "/",             element: <LoginPage /> },
+      { path: "/unauthorized", element: <UnauthorizedPage /> },
+ 
+      {
+        path: "/dashboard",
+        element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
+      },
+      {
+        path: "/santri",
+        element: <ProtectedRoute><SantriPage /></ProtectedRoute>,
+      },
+      {
+        path: "/santri/:id",
+        element: <ProtectedRoute><DetailSantri /></ProtectedRoute>,
+      },
+      {
+        path: "/laporan",
+        element: <ProtectedRoute><LaporanPage /></ProtectedRoute>,
+      },
+      {
+        path: "/pengajar",
+        element: (
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <PengajarPage />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
 ]);
-
+ 
 export default router;

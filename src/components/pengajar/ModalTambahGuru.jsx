@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tambahGuru } from "../../controller/pengajarController";
+import { guruController } from "../../controller/guruController";
 
 export default function ModalTambahGuru({ onClose, onSuccess }) {
   const [form, setForm] = useState({
@@ -25,7 +25,7 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
     setLoading(true);
     setError(null);
     try {
-      await tambahGuru({ ...form, umur: Number(form.umur) });
+      await guruController.create(form);
       onSuccess();
       onClose();
     } catch (err) {
@@ -38,13 +38,11 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-[18px] shadow-2xl w-full max-w-md mx-4">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0f0f0]">
           <h2 className="text-[1rem] font-extrabold text-[#1a1a1a]">Tambah Pengajar Baru</h2>
           <button onClick={onClose} className="text-[#aaa] hover:text-[#555] text-xl leading-none">✕</button>
         </div>
 
-        {/* Body */}
         <div className="px-6 py-5 space-y-3">
           <div>
             <label className="text-[0.75rem] text-[#999] mb-1 block">Nama Lengkap <span className="text-red-400">*</span></label>
@@ -89,7 +87,6 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
           {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#f0f0f0]">
           <button onClick={onClose}
             className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold">
