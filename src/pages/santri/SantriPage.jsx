@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../../components/layout/Sidebar";
 import KelasCard from "../../components/ui/KelasCard";
 import { useMurid } from "../../hooks/useMurid";
+import { useGuruList } from "../../hooks/useGuruList";
 
 /** @typedef {{ id: number; nama: string; pengajar: string; jadwal: string; siswa: number; maks: number }} KelasItem */
 
@@ -9,14 +10,12 @@ import { useMurid } from "../../hooks/useMurid";
 
 export default function SantriPage() {
   const [search, setSearch] = useState("");
-  const { data: muridList, loading, error } = useMurid();
+  const { data: guruList, loading, error } = useGuruList();
 
   if (loading) return <div>Loading...</div>;
-  if (error)   return <div>Error: {error}</div>;
-  const filtered = muridList.filter(
-    (m) =>
-      m.nama.toLowerCase().includes(search.toLowerCase()) ||
-      m.guru.toLowerCase().includes(search.toLowerCase()),
+  if (error) return <div>Error: {error}</div>;
+  const filtered = guruList.filter((g) =>
+    g.nama.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -44,10 +43,10 @@ export default function SantriPage() {
         {/* Header */}
         <header>
           <p className="text-xs font-extrabold text-teal-500 tracking-widest mb-1.5 uppercase">
-            Data Kelas Santri
+            Data Guru Santri
           </p>
           <h1 className="text-3xl font-extrabold text-gray-900 mb-1.5">
-            {muridList.length} Kelas Aktif
+            {guruList.length} Guru Aktif
           </h1>
           <p className="text-sm text-gray-400">
             Klik kelas yang tersedia untuk melihat detail siswa-siswi
@@ -58,8 +57,8 @@ export default function SantriPage() {
         <section aria-label="Daftar kelas">
           {filtered.length > 0 ? (
             <div className="grid grid-cols-2 gap-5">
-              {filtered.map((k) => (
-                <KelasCard key={k.id} kelas={k} />
+              {filtered.map((g) => (
+                <KelasCard key={g.id} guru={g} />
               ))}
             </div>
           ) : (
