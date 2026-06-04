@@ -3,6 +3,7 @@ import Sidebar from "../../components/layout/Sidebar";
 import KelasCard from "../../components/ui/KelasCard";
 import { useMurid } from "../../hooks/useMurid";
 import { useGuruList } from "../../hooks/useGuruList";
+import { SearchIcon } from "lucide-react";
 
 /** @typedef {{ id: number; nama: string; pengajar: string; jadwal: string; siswa: number; maks: number }} KelasItem */
 
@@ -26,7 +27,7 @@ export default function SantriPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-4">
           <label className="flex items-center gap-2.5 bg-gray-200 rounded-full px-5 py-2.5 w-96">
-            <span className="text-gray-400">🔍</span>
+            <SearchIcon size={20} className="text-grey-600" />
             <input
               type="search"
               placeholder="Cari kelas atau pengajar..."

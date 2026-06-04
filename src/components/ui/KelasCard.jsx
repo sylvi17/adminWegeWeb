@@ -1,3 +1,4 @@
+import { MapPin, Phone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function KelasCard({ guru }) {
@@ -26,17 +27,17 @@ export default function KelasCard({ guru }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <InfoRow icon="📞" text={noHp ?? "-"} />
-        <InfoRow icon="📍" text={alamat ?? "-"} />
+        <InfoRow icon={Phone} text={noHp ?? "-"} />
+        <InfoRow icon={MapPin} text={alamat ?? "-"} />
       </div>
     </article>
   );
 }
 
-function InfoRow({ icon, text }) {
+function InfoRow({ icon: Icon, text }) {
   return (
     <div className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed">
-      <span className="text-base mt-px shrink-0">{icon}</span>
+      <Icon size={15} className="mt-px shrink-0" />
       <span>{text}</span>
     </div>
   );

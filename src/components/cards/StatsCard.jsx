@@ -1,10 +1,10 @@
-export default function StatsCard({ icon, label, value, suffix = "", bg = "bg-white", dark = false }) {
+export default function StatsCard({ icon: Icon, label, value, suffix = "", bg = "bg-white", dark = false }) {
   return (
     // .dash-stat-card: border-radius 18px, padding 22px 20px, flex col, gap 6px, min-h 140px
     <div className={`${bg} rounded-[18px] px-5 py-[22px] flex flex-col gap-1.5 min-h-[140px] justify-center`}>
  
       {/* .dash-stat-icon: font-size 1.8rem, mb 4px */}
-      <span className="text-[1.8rem] mb-1">{icon}</span>
+      <Icon size={20} />
  
       {/* .dash-stat-label: 0.82rem, font-weight 600 */}
       <p className={`text-[0.82rem] font-semibold ${dark ? "text-white/85" : "text-[#999]"}`}>

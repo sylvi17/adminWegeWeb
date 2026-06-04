@@ -12,12 +12,7 @@ const STATUS_CLASS = {
   "Tidak Lancar": "tidak",
   "Kurang Lancar": "kurang",
 };
-const MENUS = [
-  { label: "Dashboard", icon: "⊞", path: "/dashboard" },
-  { label: "Data Santri", icon: "🎓", path: "/santri" },
-  { label: "Data Pengajar", icon: "📋", path: "/pengajar" },
-  { label: "Laporan Progress", icon: "📊", path: "/laporan" },
-];
+
 const PER_PAGE = 8;
 
 export default function LaporanPage() {
@@ -42,7 +37,7 @@ export default function LaporanPage() {
   if (error) return <div>Error: {error}</div>;
   return (
     <div className="flex min-h-screen bg-[#f0f0f0]">
-      <Sidebar menus={MENUS} />
+      <Sidebar/>
 
       <main className="ml-[240px] flex-1 px-8 pt-6 pb-12 flex flex-col gap-6">
         <Navbar

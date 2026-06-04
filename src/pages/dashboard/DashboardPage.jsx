@@ -2,19 +2,15 @@ import Sidebar       from "../../components/layout/Sidebar";
 import Navbar        from "../../components/layout/Navbar";
 import StatsCard     from "../../components/cards/StatsCard";
 import ProgressChart from "../../components/charts/ProgressChart";
+import { Users, BookOpen, GraduationCap, Calendar, BookIcon, MenuIcon, Users2, Check, Star } from "lucide-react";
  
-const MENUS = [
-  { label: "Dashboard",        icon: "⊞", path: "/dashboard" },
-  { label: "Data Santri",      icon: "🎓", path: "/santri"    },
-  { label: "Data Pengajar",    icon: "📋", path: "/pengajar"  },
-  { label: "Laporan Progress", icon: "📊", path: "/laporan"   },
-];
+
  
 const STATS = [
-  { icon: "👥", label: "Total Santri",        value: "250",  suffix: "",     bg: "bg-white",     dark: false },
-  { icon: "✅", label: "Santri Aktif",         value: "150",  suffix: "",     bg: "bg-white",     dark: false },
-  { icon: "⭐", label: "Rata-rata Kelancaran", value: "85.5", suffix: "/100", bg: "bg-[#f0e2cc]", dark: false },
-  { icon: "📅", label: "Kehadiran Hari ini",   value: "80%",  suffix: "",     bg: "bg-[#26a69a]", dark: true  },
+  { icon: Users2, label: "Total Santri",        value: "250",  suffix: "",     bg: "bg-white",     dark: false },
+  { icon: Check, label: "Santri Aktif",         value: "150",  suffix: "",     bg: "bg-white",     dark: false },
+  { icon: Star, label: "Rata-rata Kelancaran", value: "85.5", suffix: "/100", bg: "bg-[#f0e2cc]", dark: false },
+  { icon: Calendar, label: "Kehadiran Hari ini",   value: "80%",  suffix: "",     bg: "bg-[#26a69a]", dark: true  },
 ];
  
 const WEEK_DATA = [
@@ -46,7 +42,7 @@ export default function DashboardPage() {
       <div style={{ fontFamily: "'Nunito', sans-serif" }} className="flex min-h-screen bg-[#f0f0f0] overflow-x-hidden">
  
         {/* SIDEBAR — fixed, w-60, shadow */}
-        <Sidebar menus={MENUS} />
+        <Sidebar />
  
         {/* .dash-main: ml-60, flex col, gap-6, padding */}
         <main className="ml-60 flex-1 min-w-0 flex flex-col gap-6 px-8 pt-6 pb-12">

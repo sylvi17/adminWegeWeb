@@ -1,3 +1,4 @@
+import { Calendar, CheckCheck, Users } from "lucide-react";
 import StatsCard from "../cards/StatsCard";
 
 export default function PengajarStats({
@@ -7,21 +8,21 @@ export default function PengajarStats({
 }) {
   const stats = [
     {
-      icon: "👥",
+      icon: Users,
       label: "TOTAL PENGAJAR",
       value: totalPengajar,
       bg: "bg-white",
       dark: false,
     },
     {
-      icon: "✅",
+      icon: CheckCheck,
       label: "AKTIF MENGAJAR",
       value: totalAktif,
       bg: "bg-white",
       dark: false,
     },
     {
-      icon: "📅",
+      icon: Calendar,
       label: "IZIN / CUTI",
       value: totalIzin,
       bg: "bg-white",

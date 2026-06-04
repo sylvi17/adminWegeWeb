@@ -1,3 +1,5 @@
+import { SearchIcon } from "lucide-react";
+
 export default function Navbar({ placeholder = "Cari santri atau laporan......", onChange }) {
   return (
     // .dash-topbar: flex justify-center
@@ -5,7 +7,7 @@ export default function Navbar({ placeholder = "Cari santri atau laporan......",
  
       {/* .dash-search: flex, align-center, gap 10px, bg #e4e4e4, rounded-full, py 11px px 22px, w-[380px] */}
       <div className="flex items-center gap-2.5 bg-[#e4e4e4] rounded-full py-[11px] px-[22px] w-[380px]">
-        <span className="text-[#aaa]">🔍</span>
+        <SearchIcon size={20} className="text-teal-600" />
         <input
           type="text"
           placeholder={placeholder}
