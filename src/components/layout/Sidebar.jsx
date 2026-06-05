@@ -17,7 +17,7 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white shadow-sm flex flex-col py-8 z-50">
       <nav className="flex flex-col gap-1 flex-1">
         {menus.map((m) => {
-          const isActive = pathname === m.path;
+          const isActive = pathname === m.path || pathname.startsWith(m.path + "/");
           return (
             <button
               key={m.path}
