@@ -1,20 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { muridController } from "../controller/muridController";
 
-export function useMuridByGuru(guruId) {
+export function useWaliList() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const fetch = useCallback(() => {
-    if (!guruId) return;
     setLoading(true);
+    setError("");
     muridController
-      .getByGuru(guruId)
+      .getWaliList()
       .then(setData)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [guruId]);
+  }, []);
 
   useEffect(() => {
     fetch();

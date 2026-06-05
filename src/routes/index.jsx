@@ -8,14 +8,16 @@ import SantriPage       from "../pages/santri/SantriPage";
 import DetailSantri     from "../pages/santri/DetailSantri";
 import PengajarPage     from "../pages/pengajar/PengajarPage";
 import LaporanPage      from "../pages/laporan/LaporanPage";
- 
+import WaliPage         from "../pages/wali/WaliPage";
+import DetailWali       from "../pages/wali/DetailWali";
+
 const router = createBrowserRouter([
   {
-    element: <RootLayout />, // AuthProvider ada di sini, wraps semua route
+    element: <RootLayout />,
     children: [
       { path: "/",             element: <LoginPage /> },
       { path: "/unauthorized", element: <UnauthorizedPage /> },
- 
+
       {
         path: "/dashboard",
         element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
@@ -40,8 +42,16 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/wali-murid",
+        element: <ProtectedRoute><WaliPage /></ProtectedRoute>,
+      },
+      {
+        path: "/wali-murid/:id",
+        element: <ProtectedRoute><DetailWali /></ProtectedRoute>,
+      },
     ],
   },
 ]);
- 
+
 export default router;
