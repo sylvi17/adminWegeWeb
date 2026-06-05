@@ -36,9 +36,6 @@ export default function SantriPage() {
               className="bg-transparent outline-none text-sm text-gray-600 placeholder:text-gray-400 w-full font-nunito"
             />
           </label>
-          <button className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap">
-            + Tambah Kelas
-          </button>
         </div>
 
         {/* Header */}
@@ -50,7 +47,7 @@ export default function SantriPage() {
             {guruList.length} Guru Aktif
           </h1>
           <p className="text-sm text-gray-400">
-            Klik kelas yang tersedia untuk melihat detail siswa-siswi
+            Klik pengajar untuk melihat siswa-siswi yang diampu
           </p>
         </header>
 

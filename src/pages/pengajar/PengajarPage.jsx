@@ -117,7 +117,6 @@ export default function PengajarPage() {
           onRefresh={refetch}
         />
         <div className="grid gap-5">
-          <PengajarAttendance data={paginatedData} today={today} />
           <PengajarActivityLog activities={[]} />
         </div>
       </main>

@@ -18,11 +18,15 @@ export default function ReportTableRow({ row }) {
       </td>
 
       <td className="px-6 py-[18px] border-b border-[#f5f5f5]">
-        <StatusBadge status={row.status} />
+        <StatusBadge status={row.nilaiBacaan} />
       </td>
 
       <td className="px-6 py-[18px] border-b border-[#f5f5f5] text-[0.88rem] text-[#444]">
         {row.guru}
+      </td>
+
+      <td className="px-6 py-[18px] border-b border-[#f5f5f5] text-[0.88rem] text-[#444]">
+        {row.tanggal}
       </td>
     </tr>
   );

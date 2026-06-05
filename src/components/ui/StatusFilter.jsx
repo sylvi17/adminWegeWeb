@@ -2,12 +2,7 @@ export default function StatusFilter({
   current,
   onChange,
 }) {
-  const options = [
-    "Semua",
-    "Lancar",
-    "Kurang Lancar",
-    "Tidak Lancar",
-  ];
+  const options = ["Semua", "LANCAR", "KURANG_LANCAR", "TIDAK_LANCAR"]
 
   return (
     <div className="flex gap-2">

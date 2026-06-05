@@ -10,7 +10,6 @@ const STATS = [
   { icon: Users2, label: "Total Santri",        value: "250",  suffix: "",     bg: "bg-white",     dark: false },
   { icon: Check, label: "Santri Aktif",         value: "150",  suffix: "",     bg: "bg-white",     dark: false },
   { icon: Star, label: "Rata-rata Kelancaran", value: "85.5", suffix: "/100", bg: "bg-[#f0e2cc]", dark: false },
-  { icon: Calendar, label: "Kehadiran Hari ini",   value: "80%",  suffix: "",     bg: "bg-[#26a69a]", dark: true  },
 ];
  
 const WEEK_DATA = [

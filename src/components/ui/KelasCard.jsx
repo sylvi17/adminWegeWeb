@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 export default function KelasCard({ guru }) {
   const navigate = useNavigate();
   const { id, nama, noHp, alamat, jumlahMurid } = guru;
+  
 
   return (
     <article
-      onClick={() => navigate(`/santri/${id}`)}
+     onClick={() => navigate(`/santri/${id}`, { state: { namaGuru: nama } })}
       className="bg-white rounded-2xl p-6 flex flex-col gap-4 cursor-pointer shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
     >
       <span className="self-start text-xs font-extrabold tracking-wide px-3.5 py-1 rounded-full bg-teal-100 text-teal-700">
