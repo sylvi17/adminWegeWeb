@@ -13,7 +13,13 @@ export default function SantriPage() {
   const [search, setSearch] = useState("");
   const { data: guruList, loading, error } = useGuruList();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
   if (error) return <div>Error: {error}</div>;
   const filtered = guruList.filter((g) =>
     g.nama.toLowerCase().includes(search.toLowerCase()),

@@ -1,10 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Book, GraduationCap, ListChecksIcon, LogOut, Users } from "lucide-react";
+import { Book, GraduationCap, ListChecksIcon, LogOut, UserCheck2Icon, Users } from "lucide-react";
 const menus = [
   { label: "Dashboard", icon: Users, path: "/dashboard" },
   { label: "Data Santri", icon: GraduationCap, path: "/santri" },
   { label: "Data Pengajar", icon: Book, path: "/pengajar" },
+  { label: "Data Wali Murid", icon: UserCheck2Icon, path: "/wali-murid" },
   { label: "Laporan Progress", icon: ListChecksIcon, path: "/laporan" },
 ];
 

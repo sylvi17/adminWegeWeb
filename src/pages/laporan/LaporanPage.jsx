@@ -42,7 +42,13 @@ export default function LaporanPage() {
   const loading = l1 || l2;
   const error   = e1 || e2;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
   if (error)   return <div>Error: {error}</div>;
 
   return (
@@ -56,9 +62,6 @@ export default function LaporanPage() {
           title="Laporan Progress Santri"
           subtitle="Berikut adalah ringkasan perkembangan hafalan dan mingguan"
         >
-          <button className="rounded-full border border-gray-300 px-5 py-2 font-bold text-sm">
-            ☰ Filter Laporan
-          </button>
           <button className="rounded-full bg-[#1a5c54] text-white px-5 py-2 font-bold text-sm">
             ⬇ Unduh Rekap PDF
           </button>
