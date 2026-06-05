@@ -1,9 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+
 const menus = [
   { label: "Dashboard", icon: "⊞", path: "/dashboard" },
   { label: "Data Santri", icon: "🎓", path: "/santri" },
   { label: "Data Pengajar", icon: "📋", path: "/pengajar" },
+  { label: "Data Wali Murid", icon: "👨‍👩‍👧", path: "/wali-murid" },
   { label: "Laporan Progress", icon: "📊", path: "/laporan" },
 ];
 
@@ -16,7 +18,7 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white shadow-sm flex flex-col py-8 z-50">
       <nav className="flex flex-col gap-1 flex-1">
         {menus.map((m) => {
-          const isActive = pathname === m.path;
+          const isActive = pathname === m.path || pathname.startsWith(m.path + "/");
           return (
             <button
               key={m.path}
