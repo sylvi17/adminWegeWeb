@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
+import { Book, GraduationCap, ListChecksIcon, LogOut, UserCheck2Icon, Users } from "lucide-react";
 const menus = [
-  { label: "Dashboard", icon: "⊞", path: "/dashboard" },
-  { label: "Data Santri", icon: "🎓", path: "/santri" },
-  { label: "Data Pengajar", icon: "📋", path: "/pengajar" },
-  { label: "Data Wali Murid", icon: "👨‍👩‍👧", path: "/wali-murid" },
-  { label: "Laporan Progress", icon: "📊", path: "/laporan" },
+  { label: "Dashboard", icon: Users, path: "/dashboard" },
+  { label: "Data Santri", icon: GraduationCap, path: "/santri" },
+  { label: "Data Pengajar", icon: Book, path: "/pengajar" },
+  { label: "Data Wali Murid", icon: UserCheck2Icon, path: "/wali-murid" },
+  { label: "Laporan Progress", icon: ListChecksIcon, path: "/laporan" },
 ];
 
 export default function Sidebar() {
@@ -30,7 +30,7 @@ export default function Sidebar() {
                   : "text-gray-400 hover:bg-teal-50 hover:text-teal-500",
               ].join(" ")}
             >
-              <span className="text-lg w-6 text-center">{m.icon}</span>
+              <m.icon size={18} />
               <span>{m.label}</span>
             </button>
           );
@@ -44,7 +44,7 @@ export default function Sidebar() {
         }}
         className="flex items-center gap-3.5 px-6 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
       >
-        <span className="text-lg">🚪</span>
+        <LogOut size={20} className="text-red-600" />
         <span>Logout</span>
       </button>
     </aside>

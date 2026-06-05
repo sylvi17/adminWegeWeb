@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Sidebar from "../../components/layout/Sidebar";
 import SantriTable from "../../components/laporan/SantriTable";
 import ModalTambahMurid from "../../components/santri/ModalTambahMurid";
@@ -10,6 +10,8 @@ export default function DetailSantri() {
   const navigate = useNavigate();
   const { data: muridList, loading, error, refetch } = useMuridByGuru(id);
   const [showModal, setShowModal] = useState(false);
+  const { state } = useLocation();
+  const namaGuru = state?.namaGuru ?? "-";
 
   if (loading) {
     return (
@@ -26,8 +28,6 @@ export default function DetailSantri() {
       </div>
     );
   }
-
-  const namaGuru = muridList[0]?.guru ?? "Guru";
 
   return (
     <div className="flex min-h-screen bg-gray-100 font-nunito">

@@ -32,6 +32,10 @@ export default function ReportTable({ rows }) {
           <th className="px-6 py-4 text-left text-[0.72rem] font-extrabold text-[#bbb] tracking-[0.8px]">
             PENGAJAR
           </th>
+
+          <th className="px-6 py-4 text-left text-[0.72rem] font-extrabold text-[#bbb] tracking-[0.8px]">
+            TANGGAL
+          </th>
         </tr>
       </thead>
 

@@ -3,6 +3,7 @@ import Sidebar from "../../components/layout/Sidebar";
 import KelasCard from "../../components/ui/KelasCard";
 import { useMurid } from "../../hooks/useMurid";
 import { useGuruList } from "../../hooks/useGuruList";
+import { SearchIcon } from "lucide-react";
 
 /** @typedef {{ id: number; nama: string; pengajar: string; jadwal: string; siswa: number; maks: number }} KelasItem */
 
@@ -12,7 +13,13 @@ export default function SantriPage() {
   const [search, setSearch] = useState("");
   const { data: guruList, loading, error } = useGuruList();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
   if (error) return <div>Error: {error}</div>;
   const filtered = guruList.filter((g) =>
     g.nama.toLowerCase().includes(search.toLowerCase()),
@@ -26,7 +33,7 @@ export default function SantriPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-4">
           <label className="flex items-center gap-2.5 bg-gray-200 rounded-full px-5 py-2.5 w-96">
-            <span className="text-gray-400">🔍</span>
+            <SearchIcon size={20} className="text-grey-600" />
             <input
               type="search"
               placeholder="Cari kelas atau pengajar..."
@@ -35,9 +42,6 @@ export default function SantriPage() {
               className="bg-transparent outline-none text-sm text-gray-600 placeholder:text-gray-400 w-full font-nunito"
             />
           </label>
-          <button className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap">
-            + Tambah Kelas
-          </button>
         </div>
 
         {/* Header */}
@@ -49,7 +53,7 @@ export default function SantriPage() {
             {guruList.length} Guru Aktif
           </h1>
           <p className="text-sm text-gray-400">
-            Klik kelas yang tersedia untuk melihat detail siswa-siswi
+            Klik pengajar untuk melihat siswa-siswi yang diampu
           </p>
         </header>
 

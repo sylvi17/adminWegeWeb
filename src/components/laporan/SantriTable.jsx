@@ -1,6 +1,7 @@
 import { useState } from "react";
 import StatusBadge from "./Badge";
 import Pagination from "../layout/Pagination";
+import { SearchIcon } from "lucide-react";
 
 const PER_PAGE = 8;
 
@@ -36,7 +37,7 @@ export default function SantriTable({ siswaList }) {
     <div className="flex flex-col gap-4">
       {/* Search inline di atas tabel */}
       <label className="flex items-center gap-2.5 bg-gray-200 rounded-full px-5 py-2.5 w-80 self-start">
-        <span className="text-gray-400 text-sm">🔍</span>
+        <SearchIcon size={20} className="text-teal-600" />
         <input
           type="search"
           placeholder="Cari nama santri..."
