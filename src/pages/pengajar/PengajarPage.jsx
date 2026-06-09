@@ -48,9 +48,13 @@ function PengajarTable({
           </thead>
           <tbody>
             {loading ? (
-              <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-              </div>
+              <tr>
+                <td colSpan={6} className="px-6 py-10 text-center">
+                  <div className="flex justify-center">
+                    <div className="w-6 h-6 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                </td>
+              </tr>
             ) : error ? (
               <tr>
                 <td colSpan={6} className="px-6 py-10 text-center text-red-400">

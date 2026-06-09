@@ -5,7 +5,6 @@ const statusStyles = {
 };
 
 function initials(nama) {
-  if (!nama) return "?";
   return nama.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 }
 
@@ -75,12 +74,12 @@ export default function PengajarTable({
                       {initials(u.nama)}
                     </div>
                     <div>
-                      <div className="text-[0.92rem] font-bold text-[#1a1a1a]">{u.nama ?? "—"}</div>
-                      <div className="mt-0.5 text-[0.75rem] text-[#aaa]">{u.email ?? "—"}</div>
+                      <div className="text-[0.92rem] font-bold text-[#1a1a1a]">{u.nama}</div>
+                      <div className="mt-0.5 text-[0.75rem] text-[#aaa]">{u.email}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.email ?? "—"}</td>
+                <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.email}</td>
                 <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.guru?.no_hp || "—"}</td>
                 <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.guru?.alamat || "—"}</td>
                 <td className="px-5 py-4">

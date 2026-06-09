@@ -61,8 +61,6 @@ export const muridController = {
     });
     if (!res.ok) throw new Error("Gagal mengambil data wali");
     const json = await res.json();
-
-    // Tampilkan semua apa adanya dari API, tidak filter duplikat
     return json.data.map((w) => ({
       id: w.id,
       nama: w.nama,

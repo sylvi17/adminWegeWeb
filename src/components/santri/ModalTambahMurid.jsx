@@ -115,7 +115,7 @@ export default function ModalTambahMurid({ guruId, onClose, onSuccess }) {
             </select>
           </div>
 
-          {/* Step 2 — Pilih Nama Murid (muncul setelah wali dipilih) */}
+          {/*  Pilih Nama Murid (muncul setelah wali dipilih) */}
           <div>
             <label className="text-[0.75rem] text-[#999] mb-1 block">
               Nama Murid <span className="text-red-400">*</span>
