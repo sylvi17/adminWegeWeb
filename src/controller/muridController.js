@@ -1,27 +1,17 @@
 import { muridService } from "../services/muridService";
-
-const BASE_URL = import.meta.env.VITE_API_URL;
-
-function getHeaders() {
-  const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-    "ngrok-skip-browser-warning": "true",
-  };
-}
+import apiClient from "../services/api";
 
 export const muridController = {
   getAll: async () => {
     const res = await muridService.getAll();
     return res.data.map((m) => ({
-      id: m.id,
-      nama: m.nama,
-      umur: m.umur,
+      id:           m.id,
+      nama:         m.nama,
+      umur:         m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid: m.jilidSekarang,
-      guru: m.guru.nama,
-      wali: m.waliMurid.nama,
+      jilid:        m.jilidSekarang,
+      guru:         m.guru?.nama ?? "-",
+      wali:         m.waliMurid?.nama ?? "-",
     }));
   },
 
@@ -29,64 +19,37 @@ export const muridController = {
     const res = await muridService.getById(id);
     const m = res.data;
     return {
-      id: m.id,
-      nama: m.nama,
-      umur: m.umur,
+      id:           m.id,
+      nama:         m.nama,
+      umur:         m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid: m.jilidSekarang,
-      guru: m.guru.nama,
-      guruNoHp: m.guru.no_hp,
-      wali: m.waliMurid.nama,
-      waliPeran: m.waliMurid.peran,
+      jilid:        m.jilidSekarang,
+      guru:         m.guru?.nama ?? "-",
+      guruNoHp:     m.guru?.no_hp ?? "-",
+      wali:         m.waliMurid?.nama ?? "-",
+      waliPeran:    m.waliMurid?.peran ?? "-",
     };
   },
 
   getByGuru: async (guruId) => {
     const res = await muridService.getByGuru(guruId);
     return res.data.map((m) => ({
-      id: m.id,
-      nama: m.nama,
-      umur: m.umur,
+      id:           m.id,
+      nama:         m.nama,
+      umur:         m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid: m.jilidSekarang ?? "-",
-      wali: m.waliMurid.nama,
-    }));
-  },
-
-  getWaliList: async () => {
-    const res = await fetch(`${BASE_URL}/admin/wali`, {
-      method: "GET",
-      credentials: "include",
-      headers: getHeaders(),
-    });
-    if (!res.ok) throw new Error("Gagal mengambil data wali");
-    const json = await res.json();
-    return json.data.map((w) => ({
-      id: w.id,
-      nama: w.nama,
-      peran: w.peran,
+      jilid:        m.jilidSekarang ?? "-",
+      wali:         m.waliMurid?.nama ?? "-",
     }));
   },
 
   tambahMurid: async (formData) => {
-    const res = await fetch(`${BASE_URL}/murid`, {
-      method: "POST",
-      credentials: "include",
-      headers: getHeaders(),
-      body: JSON.stringify({
-        nama: formData.nama,
-        umur: Number(formData.umur),
-        jenisKelamin: formData.jenisKelamin,
-        guruId: Number(formData.guruId),
-        WaliId: Number(formData.waliId),
-      }),
+    return await apiClient.post("/murid", {
+      nama:         formData.nama,
+      umur:         Number(formData.umur),
+      jenisKelamin: formData.jenisKelamin,
+      guruId:       Number(formData.guruId),
+      WaliId:       Number(formData.WaliId),
     });
-
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}));
-      throw new Error(json.message || `Gagal menambah murid (status ${res.status})`);
-    }
-
-    return await res.json();
   },
 };

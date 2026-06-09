@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Pagination from "../layout/Pagination";
 import { SearchIcon } from "lucide-react";
+import SantriRow from "./SantriRow";
+import ModalEditMurid from "../santri/ModalEditMurid";
+import ModalDeleteMurid from "../santri/ModalDeleteMurid";
 
 const PER_PAGE = 8;
 
@@ -15,7 +18,9 @@ const TABLE_HEADERS = [
 
 export default function SantriTable({ siswaList }) {
   const [search, setSearch] = useState("");
-  const [page,   setPage]   = useState(1);
+  const [page, setPage] = useState(1);
+  const [editMurid, setEditMurid] = useState(null);
+  const [deleteMurid, setDeleteMurid] = useState(null);
 
   const filtered = siswaList.filter((s) =>
     s.nama.toLowerCase().includes(search.toLowerCase())
@@ -50,7 +55,14 @@ export default function SantriTable({ siswaList }) {
           </thead>
           <tbody>
             {displayed.length > 0 ? (
-              displayed.map((s) => <SantriRow key={s.id} siswa={s} />)
+              displayed.map((s) => (
+                <SantriRow
+                  key={s.id}
+                  siswa={s}
+                  onEdit={() => setEditMurid(s)}
+                  onDelete={() => setDeleteMurid(s)}
+                />
+              ))
             ) : (
               <tr>
                 <td colSpan={TABLE_HEADERS.length} className="py-16 text-center text-sm text-gray-400">
@@ -69,45 +81,22 @@ export default function SantriTable({ siswaList }) {
           onPageChange={setPage}
         />
       </div>
+
+      {editMurid && (
+        <ModalEditMurid
+          murid={editMurid}
+          onClose={() => setEditMurid(null)}
+          onSuccess={() => setEditMurid(null)}
+        />
+      )}
+
+      {deleteMurid && (
+        <ModalDeleteMurid
+          murid={deleteMurid}
+          onClose={() => setDeleteMurid(null)}
+          onSuccess={() => setDeleteMurid(null)}
+        />
+      )}
     </div>
-  );
-}
-
-function SantriRow({ siswa }) {
-  const jenisKelamin = siswa.jenisKelamin === "LAKI_LAKI" ? "Laki-laki" : "Perempuan";
-
-  return (
-    <tr className="border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors">
-      <td className="px-5 py-4 align-middle">
-        <p className="text-sm font-bold text-gray-900">{siswa.nama}</p>
-      </td>
-      <td className="px-5 py-4 text-sm text-gray-500 align-middle">
-        {siswa.jilid ?? "-"}
-      </td>
-      <td className="px-5 py-4 text-sm text-gray-500 align-middle">
-        {siswa.umur} tahun
-      </td>
-      <td className="px-5 py-4 align-middle">
-        <span className={[
-          "inline-block px-3 py-1 rounded-full text-xs font-bold",
-          siswa.jenisKelamin === "LAKI_LAKI"
-            ? "bg-blue-100 text-blue-600"
-            : "bg-pink-100 text-pink-600",
-        ].join(" ")}>
-          {jenisKelamin}
-        </span>
-      </td>
-      <td className="px-5 py-4 text-sm text-gray-500 align-middle">
-        {siswa.wali ?? "-"}
-      </td>
-      <td className="px-5 py-4 align-middle">
-        <button
-          aria-label={`Opsi untuk ${siswa.nama}`}
-          className="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors text-lg flex items-center justify-center"
-        >
-          ⋮
-        </button>
-      </td>
-    </tr>
   );
 }

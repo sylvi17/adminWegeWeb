@@ -1,12 +1,4 @@
-const statusStyles = {
-  Aktif: "bg-[#d4f0ec] text-[#00897b]",
-  Cuti: "bg-[#e8e0d0] text-[#8d6e63]",
-  Izin: "bg-[#fff8e1] text-[#f9a825]",
-};
-
-function initials(nama) {
-  return nama.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
-}
+import PengajarRow from "./PengajarRow";
 
 export default function PengajarTable({
   data,
@@ -16,6 +8,8 @@ export default function PengajarTable({
   loading,
   error,
   onRefresh,
+  onEdit,
+  onDelete,
 }) {
   return (
     <div className="overflow-hidden rounded-[18px] bg-white shadow-sm">
@@ -67,37 +61,12 @@ export default function PengajarTable({
             </tr>
           ) : (
             data.map((u) => (
-              <tr key={u.id} className="border-b border-[#f5f5f5] hover:bg-[#fafafa]">
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#d4f0ec] text-[#00897b] flex items-center justify-center text-xs font-extrabold flex-shrink-0">
-                      {initials(u.nama)}
-                    </div>
-                    <div>
-                      <div className="text-[0.92rem] font-bold text-[#1a1a1a]">{u.nama}</div>
-                      <div className="mt-0.5 text-[0.75rem] text-[#aaa]">{u.email}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.email}</td>
-                <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.guru?.no_hp || "—"}</td>
-                <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.guru?.alamat || "—"}</td>
-                <td className="px-5 py-4">
-                  <span className={`inline-block rounded-full px-4 py-1 text-[0.78rem] font-bold ${statusStyles["Aktif"]}`}>
-                    Aktif
-                  </span>
-                </td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-2">
-                    <button title="Edit" className="rounded-lg p-2 text-[#aaa] hover:bg-[#e8f5f3]">
-                      ✏️
-                    </button>
-                    <button title="Hapus" className="rounded-lg p-2 text-[#aaa] hover:bg-[#fde8e8]">
-                      🗑️
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              <PengajarRow
+                key={u.id}
+                u={u}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
             ))
           )}
         </tbody>
