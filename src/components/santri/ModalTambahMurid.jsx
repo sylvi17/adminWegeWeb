@@ -6,25 +6,36 @@ const JILID_OPTIONS = ["JILID_1", "JILID_2", "JILID_3", "JILID_4", "JILID_5", "J
 const PERAN_OPTIONS = ["ayah", "ibu", "kakek", "nenek", "wali"];
 
 const INITIAL_MURID = {
-  nama: "", umur: "", jenisKelamin: "LAKI_LAKI", jilidAwal: "",
+  nama: "", tanggal_lahir: "", jenisKelamin: "LAKI_LAKI", jilidAwal: "",
 };
 
 const INITIAL_WALI = {
-  nama: "", email: "", password: "", umur: "", peran: "ibu",
+  nama: "", email: "", password: "", tanggal_lahir: "", peran: "ibu",
 };
 
-export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess }) {
-  const [murid,       setMurid]       = useState(INITIAL_MURID);
-  const [waliMode,    setWaliMode]     = useState("existing"); // "existing" | "new"
-  const [waliList,    setWaliList]     = useState([]);
-  const [loadingWali, setLoadingWali]  = useState(false);
-  const [waliLoaded,  setWaliLoaded]   = useState(false);
-  const [selectedWaliId, setSelectedWaliId] = useState("");
-  const [newWali,     setNewWali]      = useState(INITIAL_WALI);
-  const [loading,     setLoading]      = useState(false);
-  const [error,       setError]        = useState("");
+function hitungUmur(tanggal_lahir) {
+  if (!tanggal_lahir) return null;
+  const lahir = new Date(tanggal_lahir);
+  const sekarang = new Date();
+  let umur = sekarang.getFullYear() - lahir.getFullYear();
+  const belumUlangTahun =
+    sekarang.getMonth() < lahir.getMonth() ||
+    (sekarang.getMonth() === lahir.getMonth() && sekarang.getDate() < lahir.getDate());
+  if (belumUlangTahun) umur--;
+  return umur;
+}
 
-  // Lazy load wali list saat dropdown dibuka
+export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess }) {
+  const [murid,          setMurid]          = useState(INITIAL_MURID);
+  const [waliMode,       setWaliMode]        = useState("existing");
+  const [waliList,       setWaliList]        = useState([]);
+  const [loadingWali,    setLoadingWali]     = useState(false);
+  const [waliLoaded,     setWaliLoaded]      = useState(false);
+  const [selectedWaliId, setSelectedWaliId]  = useState("");
+  const [newWali,        setNewWali]         = useState(INITIAL_WALI);
+  const [loading,        setLoading]         = useState(false);
+  const [error,          setError]           = useState("");
+
   async function handleOpenWaliDropdown() {
     if (waliLoaded) return;
     setLoadingWali(true);
@@ -48,19 +59,16 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
   }
 
   async function handleSubmit() {
-    // Validasi murid
-    if (!murid.nama.trim() || !murid.umur) {
-      setError("Nama dan umur murid wajib diisi.");
+    if (!murid.nama.trim()) {
+      setError("Nama murid wajib diisi.");
       return;
     }
-
-    // Validasi wali
     if (waliMode === "existing" && !selectedWaliId) {
       setError("Pilih wali murid terlebih dahulu.");
       return;
     }
-    if (waliMode === "new" && (!newWali.nama.trim() || !newWali.email.trim() || !newWali.password.trim() || !newWali.umur)) {
-      setError("Semua field wali baru wajib diisi.");
+    if (waliMode === "new" && (!newWali.nama.trim() || !newWali.email.trim() || !newWali.password.trim())) {
+      setError("Nama, email, dan password wali baru wajib diisi.");
       return;
     }
 
@@ -70,27 +78,31 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
     try {
       let waliId = Number(selectedWaliId);
 
-      // Kalau wali baru, buat dulu
       if (waliMode === "new") {
         const res = await waliController.tambahWali(newWali);
-        // ambil id wali dari response — sesuaikan key dengan response backend
         waliId = res.data?.wali?.id ?? res.data?.id;
         if (!waliId) throw new Error("Gagal mendapatkan ID wali baru.");
       }
 
+      const umur = hitungUmur(murid.tanggal_lahir);
+
       await muridController.tambahMurid({
-        nama:         murid.nama.trim(),
-        umur:         Number(murid.umur),
-        jenisKelamin: murid.jenisKelamin,
+        nama:          murid.nama.trim(),
+        umur:          umur ?? 0,
+        jenisKelamin:  murid.jenisKelamin,
         guruId,
-        WaliId:       waliId,
+        WaliId:        waliId,
         ...(murid.jilidAwal ? { jilidSekarang: murid.jilidAwal } : {}),
       });
 
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err.message ?? "Terjadi kesalahan.");
+      if (err.message?.includes("User_email_key")) {
+        setError("Email sudah digunakan. Gunakan email lain.");
+      } else {
+        setError(err.message ?? "Terjadi kesalahan.");
+      }
     } finally {
       setLoading(false);
     }
@@ -109,19 +121,17 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
         <div className="px-6 py-5 space-y-5">
 
           {/* Info guru */}
-          <div className="bg-teal-50 border border-teal-100 rounded-lg px-4 py-2.5 flex items-center justify-between">
-            <span className="text-xs text-teal-600 font-semibold">Guru</span>
-            <span className="text-sm font-extrabold text-teal-700">{namaGuru}</span>
-          </div>
+          {namaGuru && (
+            <div className="bg-teal-50 border border-teal-100 rounded-lg px-4 py-2.5 flex items-center justify-between">
+              <span className="text-xs text-teal-600 font-semibold">Guru</span>
+              <span className="text-sm font-extrabold text-teal-700">{namaGuru}</span>
+            </div>
+          )}
 
-          {/* ── DATA MURID ── */}
+          {/* DATA MURID */}
           <section>
-            <p className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-3">
-              Data Murid
-            </p>
+            <p className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-3">Data Murid</p>
             <div className="space-y-3">
-
-              {/* Nama */}
               <div>
                 <label className="text-xs text-gray-400 font-semibold mb-1 block">
                   Nama Murid <span className="text-red-400">*</span>
@@ -135,22 +145,19 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
                 />
               </div>
 
-              {/* Umur */}
               <div>
-                <label className="text-xs text-gray-400 font-semibold mb-1 block">
-                  Umur <span className="text-red-400">*</span>
-                </label>
+                <label className="text-xs text-gray-400 font-semibold mb-1 block">Tanggal Lahir</label>
                 <input
-                  type="number"
-                  min={3} max={20}
-                  value={murid.umur}
-                  onChange={(e) => handleMuridChange("umur", e.target.value)}
-                  placeholder="Umur murid"
+                  type="date"
+                  value={murid.tanggal_lahir}
+                  onChange={(e) => handleMuridChange("tanggal_lahir", e.target.value)}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
                 />
+                {murid.tanggal_lahir && (
+                  <p className="text-xs text-gray-400 mt-1">{hitungUmur(murid.tanggal_lahir)} tahun</p>
+                )}
               </div>
 
-              {/* Jenis Kelamin */}
               <div>
                 <label className="text-xs text-gray-400 font-semibold mb-1 block">Jenis Kelamin</label>
                 <div className="flex gap-2">
@@ -172,7 +179,6 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
                 </div>
               </div>
 
-              {/* Jilid Awal */}
               <div>
                 <label className="text-xs text-gray-400 font-semibold mb-1 block">
                   Jilid Awal <span className="text-gray-300">(opsional)</span>
@@ -191,13 +197,10 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
             </div>
           </section>
 
-          {/* ── DATA WALI ── */}
+          {/* DATA WALI */}
           <section>
-            <p className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-3">
-              Wali Murid
-            </p>
+            <p className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-3">Wali Murid</p>
 
-            {/* Toggle existing / new */}
             <div className="flex gap-1 bg-gray-100 rounded-full p-1 mb-3">
               {[["existing", "Pilih Wali"], ["new", "+ Wali Baru"]].map(([mode, label]) => (
                 <button
@@ -216,7 +219,6 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
               ))}
             </div>
 
-            {/* Pilih wali existing */}
             {waliMode === "existing" && (
               <select
                 value={selectedWaliId}
@@ -235,30 +237,56 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
               </select>
             )}
 
-            {/* Form wali baru */}
             {waliMode === "new" && (
               <div className="space-y-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                {[
-                  { field: "nama",     label: "Nama Wali",  type: "text",     placeholder: "Nama lengkap" },
-                  { field: "email",    label: "Email",      type: "email",    placeholder: "email@example.com" },
-                  { field: "password", label: "Password",   type: "password", placeholder: "Min. 8 karakter" },
-                  { field: "umur",     label: "Umur",       type: "number",   placeholder: "Umur wali" },
-                ].map(({ field, label, type, placeholder }) => (
-                  <div key={field}>
-                    <label className="text-xs text-gray-400 font-semibold mb-1 block">
-                      {label} <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type={type}
-                      value={newWali[field]}
-                      onChange={(e) => handleNewWaliChange(field, e.target.value)}
-                      placeholder={placeholder}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700"
-                    />
-                  </div>
-                ))}
-
-                {/* Peran */}
+                <div>
+                  <label className="text-xs text-gray-400 font-semibold mb-1 block">
+                    Nama Wali <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newWali.nama}
+                    onChange={(e) => handleNewWaliChange("nama", e.target.value)}
+                    placeholder="Nama lengkap"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 font-semibold mb-1 block">
+                    Email <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={newWali.email}
+                    onChange={(e) => handleNewWaliChange("email", e.target.value)}
+                    placeholder="email@example.com"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 font-semibold mb-1 block">
+                    Password <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={newWali.password}
+                    onChange={(e) => handleNewWaliChange("password", e.target.value)}
+                    placeholder="Min. 8 karakter"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 font-semibold mb-1 block">Tanggal Lahir</label>
+                  <input
+                    type="date"
+                    value={newWali.tanggal_lahir}
+                    onChange={(e) => handleNewWaliChange("tanggal_lahir", e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700"
+                  />
+                  {newWali.tanggal_lahir && (
+                    <p className="text-xs text-gray-400 mt-1">{hitungUmur(newWali.tanggal_lahir)} tahun</p>
+                  )}
+                </div>
                 <div>
                   <label className="text-xs text-gray-400 font-semibold mb-1 block">Peran</label>
                   <select
@@ -275,7 +303,6 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
             )}
           </section>
 
-          {/* Error */}
           {error && (
             <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
               {error}

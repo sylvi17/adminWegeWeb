@@ -1,12 +1,25 @@
 import { useState } from "react";
-import apiClient from "../../services/api";
+import { muridController } from "../../controller/muridController";
 
 const JILID_OPTIONS = ["JILID_1", "JILID_2", "JILID_3", "JILID_4", "JILID_5", "JILID_6"];
+
+function hitungUmur(tanggal_lahir) {
+  if (!tanggal_lahir) return null;
+  const lahir = new Date(tanggal_lahir);
+  const sekarang = new Date();
+  let umur = sekarang.getFullYear() - lahir.getFullYear();
+  const belumUlangTahun =
+    sekarang.getMonth() < lahir.getMonth() ||
+    (sekarang.getMonth() === lahir.getMonth() && sekarang.getDate() < lahir.getDate());
+  if (belumUlangTahun) umur--;
+  return umur;
+}
 
 export default function ModalEditMurid({ murid, onClose, onSuccess }) {
   const [form, setForm] = useState({
     nama:          murid.nama          ?? "",
     umur:          murid.umur          ?? "",
+    tanggal_lahir: "",
     jenisKelamin:  murid.jenisKelamin  ?? "",
     jilidSekarang: murid.jilid         ?? "",
   });
@@ -14,23 +27,30 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
   const [error,   setError]   = useState(null);
 
   function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+
+    if (name === "tanggal_lahir") {
+      const umurBaru = hitungUmur(value);
+      setForm((prev) => ({
+        ...prev,
+        tanggal_lahir: value,
+        umur: umurBaru ?? prev.umur,
+      }));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit() {
-    if (!form.nama || !form.umur || !form.jenisKelamin) {
-      setError("Nama, umur, dan jenis kelamin wajib diisi.");
+    if (!form.nama || !form.jenisKelamin) {
+      setError("Nama dan jenis kelamin wajib diisi.");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      await apiClient.put(`/murid/${murid.id}`, {
-        nama:          form.nama,
-        umur:          Number(form.umur),
-        jenisKelamin:  form.jenisKelamin,
-        jilidSekarang: form.jilidSekarang || null,
-      });
+      await muridController.updateMurid(murid.id, form);
       onSuccess();
     } catch (err) {
       setError(err.message ?? "Gagal mengupdate murid.");
@@ -46,15 +66,12 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-extrabold text-gray-900">Edit Murid</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none transition">
-            ✕
-          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none transition">✕</button>
         </div>
 
         {/* Body */}
         <div className="px-6 py-5 space-y-3">
 
-          {/* Nama */}
           <div>
             <label className="text-xs text-gray-400 font-semibold mb-1 block">
               Nama Lengkap <span className="text-red-400">*</span>
@@ -68,43 +85,40 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
             />
           </div>
 
-          {/* Umur + Jenis Kelamin */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-gray-400 font-semibold mb-1 block">
-                Umur <span className="text-red-400">*</span>
-              </label>
-              <input
-                name="umur"
-                type="number"
-                min="1"
-                value={form.umur}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-gray-400 font-semibold mb-1 block">
-                Jenis Kelamin <span className="text-red-400">*</span>
-              </label>
-              <select
-                name="jenisKelamin"
-                value={form.jenisKelamin}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-600"
-              >
-                <option value="" disabled>Pilih</option>
-                <option value="LAKI_LAKI">Laki-laki</option>
-                <option value="PEREMPUAN">Perempuan</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Jilid */}
           <div>
             <label className="text-xs text-gray-400 font-semibold mb-1 block">
-              Jilid Saat Ini
+              Tanggal Lahir <span className="text-gray-300">(opsional, untuk update umur)</span>
             </label>
+            <input
+              name="tanggal_lahir"
+              type="date"
+              value={form.tanggal_lahir}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Umur saat ini: <span className="font-bold text-gray-600">{form.umur || 0} tahun</span>
+            </p>
+          </div>
+
+          <div>
+            <label className="text-xs text-gray-400 font-semibold mb-1 block">
+              Jenis Kelamin <span className="text-red-400">*</span>
+            </label>
+            <select
+              name="jenisKelamin"
+              value={form.jenisKelamin}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-600"
+            >
+              <option value="" disabled>Pilih</option>
+              <option value="LAKI_LAKI">Laki-laki</option>
+              <option value="PEREMPUAN">Perempuan</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs text-gray-400 font-semibold mb-1 block">Jilid Saat Ini</label>
             <select
               name="jilidSekarang"
               value={form.jilidSekarang}

@@ -8,7 +8,7 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
     password: "",
     no_hp: "",
     alamat: "",
-    umur: "",
+    tanggal_lahir: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,14 +22,28 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
       setError("Nama, email, dan password wajib diisi.");
       return;
     }
+
+    if (form.no_hp && !/^\d+$/.test(form.no_hp)) {
+      setError("No. HP hanya boleh berisi angka.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      await guruController.create(form);
+      const payload = {
+        ...form,
+        no_hp: form.no_hp || null, // kirim String langsung, tidak perlu parseInt
+      };
+      await guruController.create(payload);
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err.message);
+      if (err.message?.includes("User_email_key")) {
+        setError("Email sudah digunakan. Gunakan email lain.");
+      } else {
+        setError(err.message ?? "Terjadi kesalahan.");
+      }
     } finally {
       setLoading(false);
     }
@@ -62,12 +76,12 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[0.75rem] text-[#999] mb-1 block">No. HP</label>
-              <input name="no_hp" value={form.no_hp} onChange={handleChange} placeholder="08xxxxxxxxxx"
+              <input name="no_hp" value={form.no_hp} onChange={handleChange} placeholder="08xxxxxxxxxx" inputMode="numeric"
                 className="w-full border border-[#eee] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#26a69a]" />
             </div>
             <div>
-              <label className="text-[0.75rem] text-[#999] mb-1 block">Umur</label>
-              <input name="umur" type="number" value={form.umur} onChange={handleChange} placeholder="30"
+              <label className="text-[0.75rem] text-[#999] mb-1 block">Tanggal Lahir</label>
+              <input name="tanggal_lahir" type="date" value={form.tanggal_lahir} onChange={handleChange}
                 className="w-full border border-[#eee] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#26a69a]" />
             </div>
           </div>
@@ -88,12 +102,10 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
         </div>
 
         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#f0f0f0]">
-          <button onClick={onClose}
-            className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold">
+          <button onClick={onClose} className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold">
             Batal
           </button>
-          <button onClick={handleSubmit} disabled={loading}
-            className="text-sm px-5 py-2 rounded-full bg-[#1a5c54] hover:bg-[#26a69a] text-white font-bold shadow-md transition disabled:opacity-50">
+          <button onClick={handleSubmit} disabled={loading} className="text-sm px-5 py-2 rounded-full bg-[#1a5c54] hover:bg-[#26a69a] text-white font-bold shadow-md transition disabled:opacity-50">
             {loading ? "Menyimpan..." : "Simpan"}
           </button>
         </div>

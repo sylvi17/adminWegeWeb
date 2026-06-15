@@ -3,10 +3,11 @@ import apiClient from "../../services/api";
 
 export default function ModalEditPengajar({ pengajar, onClose, onSuccess }) {
   const [form, setForm] = useState({
-    nama:  pengajar.nama  ?? "",
-    email: pengajar.email ?? "",
-    noHp:  pengajar.noHp  ?? "",   
-    alamat: pengajar.alamat ?? "",  
+    nama:          pengajar.nama          ?? "",
+    email:         pengajar.email         ?? "",
+    noHp:          pengajar.noHp          ?? "",
+    alamat:        pengajar.alamat        ?? "",
+    tanggal_lahir: pengajar.tanggal_lahir ?? "",
   });
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState(null);
@@ -16,7 +17,6 @@ export default function ModalEditPengajar({ pengajar, onClose, onSuccess }) {
   }
 
   async function handleSubmit() {
-    console.log("pengajar:", pengajar);
     if (!form.nama) {
       setError("Nama wajib diisi.");
       return;
@@ -24,15 +24,20 @@ export default function ModalEditPengajar({ pengajar, onClose, onSuccess }) {
     setLoading(true);
     setError(null);
     try {
-      await apiClient.put(`/admin/users/${pengajar.id}`, {
-        nama:   form.nama,
-        email:  form.email,
-        no_hp:  form.noHp,
-        alamat: form.alamat,
+      await apiClient.put(`/admin/users/${pengajar.userId ?? pengajar.id}`, {
+        nama:          form.nama,
+        email:         form.email,
+        no_hp:         form.noHp || null,
+        alamat:        form.alamat,
+        tanggal_lahir: form.tanggal_lahir ?? "",
       });
       onSuccess();
     } catch (err) {
-      setError(err.message ?? "Gagal mengupdate pengajar.");
+      if (err.message?.includes("User_email_key")) {
+        setError("Email sudah digunakan oleh pengguna lain.");
+      } else {
+        setError(err.message ?? "Gagal mengupdate pengajar.");
+      }
     } finally {
       setLoading(false);
     }
@@ -45,9 +50,7 @@ export default function ModalEditPengajar({ pengajar, onClose, onSuccess }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-extrabold text-gray-900">Edit Pengajar</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none transition">
-            ✕
-          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none transition">✕</button>
         </div>
 
         {/* Body */}
@@ -79,6 +82,17 @@ export default function ModalEditPengajar({ pengajar, onClose, onSuccess }) {
               value={form.noHp}
               onChange={handleChange}
               placeholder="08xxxxxxxxxx"
+              inputMode="numeric"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
+            />
+          </Field>
+
+          <Field label="Tanggal Lahir">
+            <input
+              name="tanggal_lahir"
+              type="date"
+              value={form.tanggal_lahir}
+              onChange={handleChange}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
             />
           </Field>
