@@ -45,12 +45,29 @@ export const muridController = {
   },
 
   tambahMurid: async (formData) => {
-    return await apiClient.post("/murid", {
+    const payload = {
       nama:         formData.nama,
-      umur:         Number(formData.umur),
+      umur:         Number(formData.umur) || 0,
       jenisKelamin: formData.jenisKelamin,
       guruId:       Number(formData.guruId),
       WaliId:       Number(formData.WaliId),
-    });
+    };
+
+    if (formData.jilidSekarang) {
+      payload.jilidSekarang = formData.jilidSekarang;
+    }
+
+    return await apiClient.post("/murid", payload);
+  },
+
+  updateMurid: async (id, formData) => {
+    const payload = {
+      nama:         formData.nama,
+      umur:         Number(formData.umur) || 0,
+      jenisKelamin: formData.jenisKelamin,
+      jilidSekarang: formData.jilidSekarang || null,
+    };
+
+    return await apiClient.put(`/murid/${id}`, payload);
   },
 };

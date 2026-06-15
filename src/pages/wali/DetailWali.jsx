@@ -5,6 +5,13 @@ import SantriTable from "../../components/laporan/SantriTable";
 import ModalTambahMurid from "../../components/santri/ModalTambahMurid";
 import { useMuridByWali } from "../../hooks/useMuridByWali";
 
+function hitungUmur(tanggal_lahir) {
+  if (!tanggal_lahir) return "-";
+  const lahir = new Date(tanggal_lahir);
+  const sekarang = new Date();
+  return sekarang.getFullYear() - lahir.getFullYear();
+}
+
 export default function DetailWali() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -32,16 +39,6 @@ export default function DetailWali() {
       <Sidebar />
 
       <main className="ml-60 flex-1 min-w-0 px-8 py-6 flex flex-col gap-6">
-        {/* Tombol tambah anak — hanya muncul di detail */}
-        {/* <div className="flex items-center justify-end">
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap"
-          >
-            + Tambah Anak
-          </button>
-        </div> */}
-
         <header className="flex flex-col gap-1">
           <button
             onClick={() => navigate("/wali-murid")}
@@ -56,7 +53,7 @@ export default function DetailWali() {
             {wali?.nama ?? "Wali"} — {muridList.length} Anak
           </h1>
           <p className="text-sm text-[#aaa] capitalize">
-            {wali?.peran} • {wali?.umur} tahun
+            {wali?.peran} • {hitungUmur(wali?.tanggal_lahir)} tahun
           </p>
         </header>
 
@@ -70,7 +67,6 @@ export default function DetailWali() {
           onClose={() => setShowModal(false)}
           onSuccess={() => {
             setShowModal(false);
-            refetch();
           }}
         />
       )}

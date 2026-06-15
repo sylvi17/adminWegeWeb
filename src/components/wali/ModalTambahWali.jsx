@@ -6,7 +6,7 @@ export default function ModalTambahWali({ onClose, onSuccess }) {
     nama: "",
     email: "",
     password: "",
-    umur: "",
+    tanggal_lahir: "",
     peran: "",
   });
   const [loading, setLoading] = useState(false);
@@ -37,13 +37,11 @@ export default function ModalTambahWali({ onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-[18px] shadow-2xl w-full max-w-md mx-4">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0f0f0]">
           <h2 className="text-[1rem] font-extrabold text-[#1a1a1a]">Tambah Wali Murid Baru</h2>
           <button onClick={onClose} className="text-[#aaa] hover:text-[#555] text-xl leading-none">✕</button>
         </div>
 
-        {/* Body */}
         <div className="px-6 py-5 space-y-3">
           <div>
             <label className="text-[0.75rem] text-[#999] mb-1 block">Nama Lengkap <span className="text-red-400">*</span></label>
@@ -79,14 +77,12 @@ export default function ModalTambahWali({ onClose, onSuccess }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[0.75rem] text-[#999] mb-1 block">Umur</label>
+              <label className="text-[0.75rem] text-[#999] mb-1 block">Tanggal Lahir</label>
               <input
-                name="umur"
-                type="number"
-                min="1"
-                value={form.umur}
+                name="tanggal_lahir"
+                type="date"
+                value={form.tanggal_lahir}
                 onChange={handleChange}
-                placeholder="30"
                 className="w-full border border-[#eee] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300"
               />
             </div>
@@ -106,7 +102,6 @@ export default function ModalTambahWali({ onClose, onSuccess }) {
             </div>
           </div>
 
-          {/* Role auto */}
           <div>
             <label className="text-[0.75rem] text-[#999] mb-1 block">Role</label>
             <div className="w-full border border-[#eee] bg-[#f9f9f9] rounded-lg px-3 py-2 text-sm text-[#aaa] flex items-center justify-between">
@@ -118,19 +113,11 @@ export default function ModalTambahWali({ onClose, onSuccess }) {
           {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#f0f0f0]">
-          <button
-            onClick={onClose}
-            className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold"
-          >
+          <button onClick={onClose} className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold">
             Batal
           </button>
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="text-sm px-5 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-white font-bold shadow-md transition disabled:opacity-50"
-          >
+          <button onClick={handleSubmit} disabled={loading} className="text-sm px-5 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-white font-bold shadow-md transition disabled:opacity-50">
             {loading ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
