@@ -12,7 +12,7 @@ const TABLE_HEADERS = [
   "Jilid Saat Ini",
   "Umur",
   "Jenis Kelamin",
-  "Wali",
+  "Guru",
   "Aksi",
 ];
 

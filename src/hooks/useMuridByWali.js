@@ -1,28 +1,49 @@
 import { useState, useEffect, useCallback } from "react";
-import { waliController } from "../controller/waliController";
+import apiClient from "../services/api";
 
 export function useMuridByWali(waliId) {
-  const [wali, setWali] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [wali,      setWali]      = useState(null);
+  const [muridList, setMuridList] = useState([]);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState("");
 
-  const fetch = useCallback(async () => {
+  const fetch = useCallback(() => {
     if (!waliId) return;
     setLoading(true);
-    try {
-      const allWali = await waliController.getAll();
-      const found = allWali.find((w) => w.id === Number(waliId));
-      setWali(found ?? null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false); // ← sebelumnya setLoading(false)) kelebihan kurung
-    }
+    setError("");
+
+    apiClient.get(`/murid/wali/${waliId}`)
+      .then((res) => {
+        const data = res.data ?? [];
+
+        // Info wali dari murid pertama
+        const waliInfo = data[0]?.waliMurid ?? null;
+        setWali(waliInfo ? {
+          id:    waliInfo.id,
+          nama:  waliInfo.nama,
+          umur:  waliInfo.umur,
+          peran: waliInfo.peran,
+          email: waliInfo.user?.email ?? "-",
+        } : null);
+
+        // Map murid
+        setMuridList(data.map((m) => ({
+          id:            m.id,
+          nama:          m.nama,
+          umur:          m.umur,
+          jenisKelamin:  m.jenisKelamin,
+          jilid:         m.jilidSekarang ?? "-",
+          guru:         m.guru?.user?.nama ?? m.guru?.nama ?? "-",     // ← string untuk SantriRow
+          wali:          m.waliMurid?.nama ?? "-",
+        })));
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, [waliId]);
 
   useEffect(() => {
     fetch();
   }, [fetch]);
 
-  return { wali, loading, error, refetch: fetch };
+  return { wali, muridList, loading, error, refetch: fetch };
 }

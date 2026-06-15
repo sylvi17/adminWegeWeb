@@ -20,7 +20,7 @@ export default function PengajarTable({
               NAMA USTADZ/ USTADZAH
             </th>
             <th className="px-5 py-4 text-left text-[0.72rem] font-extrabold tracking-[0.8px] text-[#bbb]">
-              EMAIL
+              JUMLAH MURID
             </th>
             <th className="px-5 py-4 text-left text-[0.72rem] font-extrabold tracking-[0.8px] text-[#bbb]">
               NO. HP

@@ -6,9 +6,7 @@ export default function PengajarRow({ u, onEdit, onDelete }) {
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false);
-      }
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -18,14 +16,10 @@ export default function PengajarRow({ u, onEdit, onDelete }) {
     return nama.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   }
 
-  const statusStyles = {
-    Aktif: "bg-[#d4f0ec] text-[#00897b]",
-    Cuti: "bg-[#e8e0d0] text-[#8d6e63]",
-    Izin: "bg-[#fff8e1] text-[#f9a825]",
-  };
-
   return (
     <tr className="border-b border-[#f5f5f5] hover:bg-[#fafafa]">
+
+      {/* Nama + email */}
       <td className="px-5 py-4">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#d4f0ec] text-[#00897b] flex items-center justify-center text-xs font-extrabold flex-shrink-0">
@@ -37,14 +31,30 @@ export default function PengajarRow({ u, onEdit, onDelete }) {
           </div>
         </div>
       </td>
-      <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.email}</td>
-      <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.guru?.no_hp || "—"}</td>
-      <td className="px-5 py-4 text-[0.88rem] text-[#444]">{u.guru?.alamat || "—"}</td>
+
+      {/* Jumlah murid */}
+      <td className="px-5 py-4 text-[0.88rem] text-[#444]">
+        {u.jumlahMurid} murid
+      </td>
+
+      {/* No. HP */}
+      <td className="px-5 py-4 text-[0.88rem] text-[#444]">
+        {u.noHp}
+      </td>
+
+      {/* Alamat */}
+      <td className="px-5 py-4 text-[0.88rem] text-[#444]">
+        {u.alamat}
+      </td>
+
+      {/* Status */}
       <td className="px-5 py-4">
-        <span className={`inline-block rounded-full px-4 py-1 text-[0.78rem] font-bold ${statusStyles["Aktif"]}`}>
+        <span className="inline-block rounded-full px-4 py-1 text-[0.78rem] font-bold bg-[#d4f0ec] text-[#00897b]">
           Aktif
         </span>
       </td>
+
+      {/* Aksi */}
       <td className="px-5 py-4">
         <div className="relative" ref={ref}>
           <button
