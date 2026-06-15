@@ -37,7 +37,7 @@ export default function SantriRow({ siswa, onEdit, onDelete }) {
         </span>
       </td>
       <td className="px-5 py-4 text-sm text-gray-500 align-middle">
-        {siswa.wali ?? "-"}
+        {siswa.guru ?? "-"}
       </td>
       <td className="px-5 py-4 align-middle">
         <div className="relative" ref={ref}>

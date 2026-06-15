@@ -4,12 +4,14 @@ export const guruController = {
   getAll: async () => {
     const res = await guruService.getAll();
     return res.data
-      .filter((g) => g.nama) // ← filter data yang nama-nya null
+      .filter((g) => g.nama)
       .map((g) => ({
-        id:          g.id,
-        nama:        g.nama,
-        noHp:        g.no_hp ?? "-",
-        alamat:      g.alamat ?? "-",
+        id: g.id,
+        userId: g.user?.id,
+        nama: g.user?.nama ?? g.nama,
+        email: g.user?.email ?? "-",
+        noHp: g.no_hp ?? "-",
+        alamat: g.alamat ?? "-",
         jumlahMurid: g.murid?.length ?? 0,
       }));
   },

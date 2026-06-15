@@ -40,6 +40,7 @@ export const muridController = {
       jenisKelamin: m.jenisKelamin,
       jilid:        m.jilidSekarang ?? "-",
       wali:         m.waliMurid?.nama ?? "-",
+       guru:         m.guru?.nama ?? "-",
     }));
   },
 
