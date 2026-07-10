@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
     const result = await authController.login({ username, password });
 
     // Validasi role — lempar error supaya LoginPage bisa tangkap
-    if (result.data.role !== "ADMIN") {
+    if (result.data.role !== "SUPERADMIN" && result.data.role !== "ADMIN") {
       throw new Error("Akun ini tidak memiliki akses ke dashboard admin.");
     }
 

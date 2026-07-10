@@ -1,15 +1,43 @@
-import Sidebar   from "../../components/layout/Sidebar";
-import Navbar    from "../../components/layout/Navbar";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
 import StatsCard from "../../components/cards/StatsCard";
+import PengajarActivityLog from "../../components/pengajar/PengajarActivityLog";
+import useActivityLogs from "../../hooks/useActivityLogs";
 import { Users2, Check, Star } from "lucide-react";
 
 const STATS = [
-  { icon: Users2, label: "Total Santri",         value: "250",  suffix: "",     bg: "bg-white",     dark: false },
-  { icon: Check,  label: "Santri Aktif",         value: "150",  suffix: "",     bg: "bg-white",     dark: false },
-  { icon: Star,   label: "Rata-rata Kelancaran", value: "85.5", suffix: "/100", bg: "bg-[#f0e2cc]", dark: false },
+  {
+    icon: Users2,
+    label: "Total Santri",
+    value: "250",
+    suffix: "",
+    bg: "bg-white",
+    dark: false,
+  },
+  {
+    icon: Check,
+    label: "Santri Aktif",
+    value: "150",
+    suffix: "",
+    bg: "bg-white",
+    dark: false,
+  },
+  {
+    icon: Star,
+    label: "Rata-rata Kelancaran",
+    value: "85.5",
+    suffix: "/100",
+    bg: "bg-[#f0e2cc]",
+    dark: false,
+  },
 ];
 
 export default function DashboardPage() {
+  const {
+        activities,
+        loading,
+        refetch,
+    } = useActivityLogs();
   return (
     <>
       <link
@@ -17,11 +45,13 @@ export default function DashboardPage() {
         rel="stylesheet"
       />
 
-      <div style={{ fontFamily: "'Nunito', sans-serif" }} className="flex min-h-screen bg-[#f0f0f0] overflow-x-hidden">
+      <div
+        style={{ fontFamily: "'Nunito', sans-serif" }}
+        className="flex min-h-screen bg-[#f0f0f0] overflow-x-hidden"
+      >
         <Sidebar />
 
         <main className="ml-60 flex-1 min-w-0 flex flex-col gap-6 px-8 pt-6 pb-12">
-          <Navbar />
 
           <header>
             <p className="text-[0.72rem] font-extrabold text-[#26a69a] tracking-[1.5px] mb-1.5 uppercase">
@@ -44,9 +74,13 @@ export default function DashboardPage() {
           <section className="grid grid-cols-2 gap-5">
             <div
               className="rounded-[18px] px-7 pt-7 pb-6 flex flex-col gap-2 text-white"
-              style={{ background: "linear-gradient(135deg, #26a69a 0%, #4db6ac 100%)" }}
+              style={{
+                background: "linear-gradient(135deg, #26a69a 0%, #4db6ac 100%)",
+              }}
             >
-              <h2 className="text-[1.2rem] font-extrabold">Input Progress Santri</h2>
+              <h2 className="text-[1.2rem] font-extrabold">
+                Input Progress Santri
+              </h2>
               <p className="text-[0.88rem] opacity-90 leading-relaxed">
                 Catat pencapaian hari ini dengan cepat
               </p>
@@ -57,7 +91,9 @@ export default function DashboardPage() {
 
             <div
               className="rounded-[18px] px-7 pt-7 pb-6 flex flex-col gap-2 text-white"
-              style={{ background: "linear-gradient(135deg, #2e7d32 0%, #43a047 100%)" }}
+              style={{
+                background: "linear-gradient(135deg, #2e7d32 0%, #43a047 100%)",
+              }}
             >
               <h2 className="text-[1.2rem] font-extrabold">Laporan Bulanan</h2>
               <p className="text-[0.88rem] opacity-90 leading-relaxed">
@@ -68,6 +104,10 @@ export default function DashboardPage() {
               </button>
             </div>
           </section>
+
+          <div className="grid gap-5">
+            <PengajarActivityLog activities={activities} />
+          </div>
         </main>
       </div>
     </>
