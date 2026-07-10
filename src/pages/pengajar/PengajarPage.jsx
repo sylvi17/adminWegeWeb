@@ -53,9 +53,6 @@ export default function PengajarPage() {
           onEdit={(u) => setEditPengajar(u)}
           onDelete={(u) => setDeletePengajar(u)}
         />
-        <div className="grid gap-5">
-          <PengajarActivityLog activities={[]} />
-        </div>
       </main>
 
       {showModal && (

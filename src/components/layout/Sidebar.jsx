@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Book, GraduationCap, ListChecksIcon, LogOut, UserCheck2Icon, Users } from "lucide-react";
+import { Book, GraduationCap, ListChecksIcon, LogOut, UserCheck2Icon, Users, ShieldCheck } from "lucide-react";
 const menus = [
   { label: "Dashboard", icon: Users, path: "/dashboard" },
   { label: "Data Santri", icon: GraduationCap, path: "/santri" },
@@ -8,16 +8,23 @@ const menus = [
   { label: "Data Wali Murid", icon: UserCheck2Icon, path: "/wali-murid" },
   { label: "Laporan Progress", icon: ListChecksIcon, path: "/laporan" },
 ];
-
 export default function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { logout } = useAuth();
+  const { logout,user } = useAuth();
+  const sidebarMenus = [...menus];
+  if (user?.role === "SUPERADMIN") {
+    sidebarMenus.push({
+      label: "Manajemen Admin",
+      icon: ShieldCheck,
+      path: "/manajemen-admin",
+    });
+  }
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white shadow-sm flex flex-col py-8 z-50">
       <nav className="flex flex-col gap-1 flex-1">
-        {menus.map((m) => {
+        {sidebarMenus.map((m) => {
           const isActive = pathname === m.path || pathname.startsWith(m.path + "/");
           return (
             <button

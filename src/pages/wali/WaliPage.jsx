@@ -37,7 +37,6 @@ export default function WaliPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-4">
           <label className="flex items-center gap-2.5 bg-gray-200 rounded-full px-5 py-2.5 w-96">
-            <span className="text-gray-400">🔍</span>
             <input
               type="search"
               placeholder="Cari wali murid..."

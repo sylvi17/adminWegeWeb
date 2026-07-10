@@ -10,6 +10,7 @@ import PengajarPage     from "../pages/pengajar/PengajarPage";
 import LaporanPage      from "../pages/laporan/LaporanPage";
 import WaliPage         from "../pages/wali/WaliPage";
 import DetailWali       from "../pages/wali/DetailWali";
+import ManajemenAdminPage from "../pages/manajemen-admin/ManajemenAdminPage";
 
 const router = createBrowserRouter([
   {
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
       {
         path: "/pengajar",
         element: (
-          <ProtectedRoute allowedRoles={["ADMIN"]}>
+          <ProtectedRoute allowedRoles={["ADMIN", "SUPERADMIN"]}>
             <PengajarPage />
           </ProtectedRoute>
         ),
@@ -49,6 +50,11 @@ const router = createBrowserRouter([
       {
         path: "/wali-murid/:id",
         element: <ProtectedRoute><DetailWali /></ProtectedRoute>,
+      },
+      
+      {
+        path: "/manajemen-admin",
+        element: <ProtectedRoute allowedRoles={["SUPERADMIN"]}><ManajemenAdminPage/></ProtectedRoute>,
       },
     ],
   },
