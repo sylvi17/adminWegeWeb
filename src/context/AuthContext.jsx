@@ -30,13 +30,10 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (username, password) => {
     const result = await authController.login({ username, password });
-
-    // Validasi role — lempar error supaya LoginPage bisa tangkap
     if (result.data.role !== "SUPERADMIN" && result.data.role !== "ADMIN") {
       throw new Error("Akun ini tidak memiliki akses ke dashboard admin.");
     }
 
-    // Simpan ke sessionStorage (bukan localStorage — bersih saat tab ditutup)
     sessionStorage.setItem(TOKEN_KEY, result.token);
     sessionStorage.setItem(USER_KEY, JSON.stringify(result.data));
     setUser(result.data);
