@@ -14,7 +14,7 @@ function getHeaders() {
 
 export const waliController = {
   getAll: async () => {
-    const res = await fetch(`${BASE_URL}/admin/wali`, {
+    const res = await fetch(`${BASE_URL}/wali`, {
       method: "GET",
       credentials: "include",
       headers: getHeaders(),
