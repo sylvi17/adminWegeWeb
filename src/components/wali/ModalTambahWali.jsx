@@ -24,7 +24,7 @@ export default function ModalTambahWali({ onClose, onSuccess }) {
     setLoading(true);
     setError(null);
     try {
-      await waliController.tambahWali(form);
+      await waliController.create(form);
       onSuccess();
       onClose();
     } catch (err) {

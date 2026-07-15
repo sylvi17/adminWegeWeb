@@ -1,66 +1,58 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
-
-function getToken() {
-  return sessionStorage.getItem("tpq_token");
-}
-
-function getHeaders() {
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-    "ngrok-skip-browser-warning": "true",
-  };
-}
+import { waliService } from "../services/waliService";
 
 export const waliController = {
   getAll: async () => {
-    const res = await fetch(`${BASE_URL}/wali`, {
-      method: "GET",
-      credentials: "include",
-      headers: getHeaders(),
-    });
-    if (!res.ok) throw new Error("Gagal mengambil data wali");
-    const json = await res.json();
-    return json.data.map((w) => ({
+    const res = await waliService.getAll();
+
+    return res.data.map((w) => ({
       id: w.id,
-      nama: w.nama,
-      tanggal_lahir: w.tanggal_lahir ?? null,
+      userId: w.user?.id,
+      nama: w.user?.nama ?? w.nama,
+      email: w.user?.email ?? "-",
+      tanggal_lahir: w.tanggal_lahir,
       peran: w.peran,
       jumlahMurid: w.murid?.length ?? 0,
-      murid: w.murid?.map((m) => ({
-        id: m.id,
-        nama: m.nama,
-        jenisKelamin: m.jenisKelamin,
-        jilid: m.jilidSekarang ?? "-",
-      })) ?? [],
+      murid:
+        w.murid?.map((m) => ({
+          id: m.id,
+          nama: m.nama,
+          jenisKelamin: m.jenisKelamin,
+          jilid: m.jilidSekarang ?? "-",
+        })) ?? [],
     }));
   },
 
-  tambahWali: async (formData) => {
-    const body = new URLSearchParams();
-    body.append("nama", formData.nama);
-    body.append("email", formData.email);
-    body.append("password", formData.password);
-    body.append("tanggal_lahir", formData.tanggal_lahir ?? "");
-    body.append("role", "WALI");
-    body.append("peran", formData.peran);
-
-    const res = await fetch(`${BASE_URL}/wali`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Bearer ${getToken()}`,
-        "ngrok-skip-browser-warning": "true",
-      },
-      body: body.toString(),
+  create: async (formData) => {
+    const res = await waliService.create({
+      ...formData,
+      role: "WALI",
     });
 
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}));
-      throw new Error(json.message || `Gagal menambah wali (status ${res.status})`);
+    return res.data;
+  },
+
+  createMany: async (waliList) => {
+    const results = [];
+
+    for (const wali of waliList) {
+      try {
+        const result = await waliController.create(wali);
+
+        results.push({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        results.push({
+          success: false,
+          data: wali,
+          error: error.message,
+        });
+
+        console.error("IMPORT ERROR:", error.message);
+      }
     }
 
-    return await res.json();
+    return results;
   },
 };
