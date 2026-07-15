@@ -1,40 +1,30 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import apiClient, { ApiError } from "../services/api";
+
+const ADMIN_ROLE_VALUE = "ADMIN";
 
 const EMPTY_ADMIN_FORM = {
   nama: "",
   email: "",
   password: "",
-  role: "",
-  no_hp: "",
-  alamat: "",
-  umur: "",
+  role: ADMIN_ROLE_VALUE, // otomatis, tidak bisa diubah dari form ini
 };
 
 const PAGE_SIZE = 5;
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
-// ---- Helper fetch dengan auth token & error handling ----
-async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-
-  const contentType = res.headers.get("content-type");
-  const data = contentType?.includes("application/json") ? await res.json() : null;
-
-  if (!res.ok) {
-    throw new Error(data?.message || `Request gagal (${res.status})`);
+// Mencoba mengambil array user dari berbagai kemungkinan bentuk response backend
+function extractUserList(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw?.data)) return raw.data;
+  if (Array.isArray(raw?.data?.data)) return raw.data.data;
+  if (Array.isArray(raw?.data?.users)) return raw.data.users;
+  if (Array.isArray(raw?.users)) return raw.users;
+  if (Array.isArray(raw?.data?.admins)) return raw.data.admins;
+  if (Array.isArray(raw?.admins)) return raw.admins;
+  if (raw?.data && typeof raw.data === "object" && !Array.isArray(raw.data)) {
+    return [raw.data];
   }
-
-  return data;
+  return [];
 }
 
 export default function manajemenController() {
@@ -46,23 +36,35 @@ export default function manajemenController() {
   const [page, setPage] = useState(1);
 
   const [showModal, setShowModal] = useState(false);
-  const [editingAdmin, setEditingAdmin] = useState(null); // null = mode tambah
+  const [editingAdmin, setEditingAdmin] = useState(null);
   const [form, setForm] = useState(EMPTY_ADMIN_FORM);
 
   const [deletingAdmin, setDeletingAdmin] = useState(null);
-
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
-  // ---- Ambil data user dari backend ----
   const fetchAdmins = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiFetch("/admin/users", { method: "GET" });
-      // sesuaikan kalau response backend dibungkus beda, misal data.data
-      setAdmins(data.data ?? data);
+      const raw = await apiClient.get("/admin/users");
+
+      // DEBUG - lihat hasil expand object ini di console, lalu kirim ke saya
+      console.log("RAW /admin/users response (expand ini):", JSON.stringify(raw, null, 2));
+
+      const allUsers = extractUserList(raw);
+      console.log("Parsed allUsers:", allUsers);
+
+      const onlyAdmins = allUsers.filter(
+        (u) => u.role?.toUpperCase?.() === ADMIN_ROLE_VALUE
+      );
+      console.log("onlyAdmins (setelah filter role):", onlyAdmins);
+
+      setAdmins(onlyAdmins);
     } catch (err) {
-      setError(err.message || "Gagal mengambil data admin");
+      console.error("fetchAdmins error:", err);
+      setError(
+        err instanceof ApiError ? err.message : "Gagal mengambil data admin"
+      );
     } finally {
       setLoading(false);
     }
@@ -72,7 +74,6 @@ export default function manajemenController() {
     fetchAdmins();
   }, [fetchAdmins]);
 
-  // ---- Derived data (search & pagination di client) ----
   const filteredAdmins = useMemo(() => {
     const q = search.toLowerCase();
     return admins.filter(
@@ -88,7 +89,6 @@ export default function manajemenController() {
     page * PAGE_SIZE
   );
 
-  // ---- Search & pagination handlers ----
   const handleSearchChange = (value) => {
     setSearch(value);
     setPage(1);
@@ -98,14 +98,11 @@ export default function manajemenController() {
   const goToNextPage = () => setPage((p) => Math.min(totalPages, p + 1));
   const goToPage = (p) => setPage(p);
 
-  // ---- Action menu handlers ----
   const toggleActionMenu = (id) => {
     setOpenActionMenuId((prev) => (prev === id ? null : id));
   };
-
   const closeActionMenu = () => setOpenActionMenuId(null);
 
-  // ---- Modal (add/edit) handlers ----
   const openAddModal = () => {
     setEditingAdmin(null);
     setForm(EMPTY_ADMIN_FORM);
@@ -117,25 +114,20 @@ export default function manajemenController() {
     setForm({
       nama: admin.nama ?? "",
       email: admin.email ?? "",
-      password: "", // dikosongkan, hanya diisi kalau mau ganti password
-      role: admin.role ?? "",
-      no_hp: admin.no_hp ?? "",
-      alamat: admin.alamat ?? "",
-      umur: admin.umur ?? "",
+      password: "",
+      role: ADMIN_ROLE_VALUE,
     });
     setShowModal(true);
     closeActionMenu();
   };
 
   const closeModal = () => setShowModal(false);
-
   const updateForm = (changes) => setForm((prev) => ({ ...prev, ...changes }));
 
-  // ---- CRUD operations ke backend ----
   const submitAdmin = async (e) => {
     e.preventDefault();
-    if (!form.nama.trim() || !form.email.trim() || !form.role.trim()) return false;
-    if (!editingAdmin && !form.password.trim()) return false; // password wajib saat tambah
+    if (!form.nama.trim() || !form.email.trim()) return false;
+    if (!editingAdmin && !form.password.trim()) return false;
 
     setLoading(true);
     setError(null);
@@ -143,34 +135,25 @@ export default function manajemenController() {
       const payload = {
         nama: form.nama,
         email: form.email,
-        role: form.role,
-        no_hp: form.no_hp,
-        alamat: form.alamat,
-        umur: form.umur ? Number(form.umur) : undefined,
+        role: ADMIN_ROLE_VALUE,
       };
-
       if (form.password.trim()) {
         payload.password = form.password;
       }
 
       if (editingAdmin) {
-        // PUT /admin/users/{id}
-        await apiFetch(`/admin/users/${editingAdmin.id}`, {
-          method: "PUT",
-          body: JSON.stringify(payload),
-        });
+        await apiClient.put(`/admin/users/${editingAdmin.id}`, payload);
       } else {
-        // POST /admin/users
-        await apiFetch("/admin/users", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
+        await apiClient.post("/admin/users", payload);
       }
       await fetchAdmins();
       setShowModal(false);
       return true;
     } catch (err) {
-      setError(err.message || "Gagal menyimpan data admin");
+      console.error("submitAdmin error:", err);
+      setError(
+        err instanceof ApiError ? err.message : "Gagal menyimpan data admin"
+      );
       return false;
     } finally {
       setLoading(false);
@@ -189,11 +172,12 @@ export default function manajemenController() {
     setLoading(true);
     setError(null);
     try {
-      // DELETE /admin/users/{id}
-      await apiFetch(`/admin/users/${deletingAdmin.id}`, { method: "DELETE" });
+      await apiClient.delete(`/admin/users/${deletingAdmin.id}`);
       await fetchAdmins();
     } catch (err) {
-      setError(err.message || "Gagal menghapus admin");
+      setError(
+        err instanceof ApiError ? err.message : "Gagal menghapus admin"
+      );
     } finally {
       setDeletingAdmin(null);
       setLoading(false);
