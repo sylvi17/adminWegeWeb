@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Sidebar from "../../components/layout/Sidebar";
 import PengajarHeader from "../../components/pengajar/PengajarHeader";
 import PengajarStats from "../../components/pengajar/PengajarStats";
@@ -8,6 +8,8 @@ import ModalTambahGuru from "../../components/pengajar/ModalTambahGuru";
 import ModalEditPengajar from "../../components/pengajar/ModalEditPengajar";
 import ModalDeletePengajar from "../../components/pengajar/ModalDeletePengajar";
 import { useGuruList } from "../../hooks/useGuruList";
+import { guruController } from "../../controller/guruController";
+import * as XLSX from "xlsx";
 
 const PER_PAGE = 10;
 
@@ -17,12 +19,50 @@ export default function PengajarPage() {
   const [editPengajar, setEditPengajar] = useState(null);
   const [deletePengajar, setDeletePengajar] = useState(null);
 
-  const { data: pengajarList, loading, error, refetch } = useGuruList();
+  const [excelData, setExcelData] = useState([]);
+  const fileInputRef = useRef(null);
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+    const mappedData = jsonData.map((item) => ({
+      ...item,
+      role: "GURU",
+    }));
+
+    const invalidData = mappedData.filter(
+      (item) => !item.nama || !item.email || !item.password,
+    );
+    if (invalidData.length > 0) {
+      alert("Masih ada data yang belum lengkap");
+      return;
+    }
+    setExcelData(mappedData);
+    try {
+      console.log("DATA IMPORT:");
+      console.table(mappedData);
+      console.log(mappedData);
+      const result = await guruController.createMany(mappedData);
+      console.table(result);
+      await refetch();
+      e.target.value = "";
+      alert("Import berhasil");
+    } catch (error) {
+      console.error(error);
+      alert("Import gagal");
+    }
+  };
+
+  const { data: pengajarList, loading, error, refetch } = useGuruList();
   const totalPage = Math.max(1, Math.ceil(pengajarList.length / PER_PAGE));
   const paginatedData = pengajarList.slice(
     (page - 1) * PER_PAGE,
-    page * PER_PAGE
+    page * PER_PAGE,
   );
 
   const stats = {
@@ -30,12 +70,25 @@ export default function PengajarPage() {
     aktif: pengajarList.length,
     izin: 0,
   };
+  const handleImportExcel = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <div className="flex min-h-screen bg-[#f0f0f0] font-nunito">
       <Sidebar />
+      <input
+        type="file"
+        accept=".xlsx,.xls"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
       <main className="ml-60 flex-1 flex flex-col gap-6 px-8 pt-6 pb-12">
-        <PengajarHeader onTambah={() => setShowModal(true)} />
+        <PengajarHeader
+          onTambah={() => setShowModal(true)}
+          onExcel={handleImportExcel}
+        />
         <PengajarStats
           total={stats.total}
           aktif={stats.aktif}
@@ -66,7 +119,10 @@ export default function PengajarPage() {
         <ModalEditPengajar
           pengajar={editPengajar}
           onClose={() => setEditPengajar(null)}
-          onSuccess={() => { setEditPengajar(null); refetch(); }}
+          onSuccess={() => {
+            setEditPengajar(null);
+            refetch();
+          }}
         />
       )}
 
@@ -74,7 +130,10 @@ export default function PengajarPage() {
         <ModalDeletePengajar
           pengajar={deletePengajar}
           onClose={() => setDeletePengajar(null)}
-          onSuccess={() => { setDeletePengajar(null); refetch(); }}
+          onSuccess={() => {
+            setDeletePengajar(null);
+            refetch();
+          }}
         />
       )}
     </div>

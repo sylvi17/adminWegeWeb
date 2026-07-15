@@ -14,7 +14,7 @@ function getHeaders() {
 
 export const waliController = {
   getAll: async () => {
-    const res = await fetch(`${BASE_URL}/admin/users`, {
+    const res = await fetch(`${BASE_URL}/wali`, {
       method: "GET",
       credentials: "include",
       headers: getHeaders(),
@@ -45,7 +45,7 @@ export const waliController = {
     body.append("role", "WALI");
     body.append("peran", formData.peran);
 
-    const res = await fetch(`${BASE_URL}/admin/users`, {
+    const res = await fetch(`${BASE_URL}/wali`, {
       method: "POST",
       credentials: "include",
       headers: {

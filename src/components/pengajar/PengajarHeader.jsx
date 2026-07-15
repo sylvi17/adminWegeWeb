@@ -1,4 +1,4 @@
-export default function PengajarHeader({ onTambah }) {
+export default function PengajarHeader({ onTambah, onExcel, onTemplate }) {
   return (
     <header className="flex items-center justify-between">
       <div>
@@ -9,6 +9,18 @@ export default function PengajarHeader({ onTambah }) {
           Kelola informasi guru dan pembimbing TPQ
         </p>
       </div>
+      <button
+        onClick={onExcel}
+        className="rounded-full bg-[#1a5c54] px-6 py-3 text-white font-bold shadow-md hover:bg-[#26a69a] transition"
+      >
+       Import Excel
+      </button>
+      <button
+        onClick={onTemplate}
+        className="rounded-full bg-[#1a5c54] px-6 py-3 text-white font-bold shadow-md hover:bg-[#26a69a] transition"
+      >
+        Download Template
+      </button>
 
       <button
         onClick={onTambah}

@@ -8,7 +8,7 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
     password: "",
     no_hp: "",
     alamat: "",
-    tanggal_lahir: "",
+    // tanggal_lahir: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -79,11 +79,11 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
               <input name="no_hp" value={form.no_hp} onChange={handleChange} placeholder="08xxxxxxxxxx" inputMode="numeric"
                 className="w-full border border-[#eee] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#26a69a]" />
             </div>
-            <div>
+            {/* <div>
               <label className="text-[0.75rem] text-[#999] mb-1 block">Tanggal Lahir</label>
               <input name="tanggal_lahir" type="date" value={form.tanggal_lahir} onChange={handleChange}
                 className="w-full border border-[#eee] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#26a69a]" />
-            </div>
+            </div> */}
           </div>
           <div>
             <label className="text-[0.75rem] text-[#999] mb-1 block">Alamat</label>
