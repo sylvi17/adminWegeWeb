@@ -78,7 +78,6 @@ export default function ManajemenAdminPage() {
               <tr>
                 <th className="px-6 py-4 font-semibold">Nama</th>
                 <th className="px-6 py-4 font-semibold">Email</th>
-                <th className="px-6 py-4 font-semibold">No. HP</th>
                 <th className="px-6 py-4 font-semibold">Role</th>
                 <th className="px-6 py-4 font-semibold text-center">Aksi</th>
               </tr>
@@ -86,14 +85,14 @@ export default function ManajemenAdminPage() {
             <tbody className="divide-y divide-gray-100">
               {loading && admins.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
                     Memuat data...
                   </td>
                 </tr>
               )}
               {!loading && admins.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
                     Tidak ada admin ditemukan.
                   </td>
                 </tr>
@@ -102,15 +101,8 @@ export default function ManajemenAdminPage() {
                 <tr key={admin.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-800">{admin.nama}</td>
                   <td className="px-6 py-4 text-gray-600">{admin.email}</td>
-                  <td className="px-6 py-4 text-gray-600">{admin.no_hp || "-"}</td>
                   <td className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        admin.role === "ADMIN"
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-teal-100 text-teal-700"
-                      }`}
-                    >
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
                       {admin.role}
                     </span>
                   </td>
