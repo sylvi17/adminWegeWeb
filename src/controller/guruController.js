@@ -17,17 +17,36 @@ export const guruController = {
   },
 
   create: async (formData) => {
-    // Konversi no_hp ke Int di sini sebelum kirim ke backend
-    const no_hp_parsed = formData.no_hp
-      ? parseInt(formData.no_hp.replace(/\D/g, ""), 10) // hapus non-angka dulu
-      : null;
-
+    console.log("DIKIRIM KE API:", formData);
     const res = await guruService.create({
       ...formData,
       role: "GURU",
-      no_hp: no_hp_parsed,
-      tanggal_lahir: formData.tanggal_lahir ?? "",
+      no_hp: String(formData.no_hp),
     });
     return res.data;
+  },
+  createMany: async (guruList) => {
+    const results = [];
+
+    for (const guru of guruList) {
+      try {
+        const result = await guruController.create(guru);
+
+        results.push({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error("IMPORT ERROR:", error.response?.data);
+
+        results.push({
+          success: false,
+          data: guru,
+          error: error.response?.data ?? error.message,
+        });
+      }
+    }
+
+    return results;
   },
 };
