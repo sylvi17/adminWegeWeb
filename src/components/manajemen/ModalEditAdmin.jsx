@@ -7,7 +7,7 @@ export default function ModalEditAdmin({ show, form, updateForm, onSubmit, onClo
         <h2 className="text-lg font-bold mb-4">Edit Admin</h2>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="text-sm font-medium text-gray-600">Nama</label>
+            <label className="text-sm font-medium text-gray-600">Nama Lengkap</label>
             <input
               type="text"
               value={form.nama}
@@ -16,6 +16,7 @@ export default function ModalEditAdmin({ show, form, updateForm, onSubmit, onClo
               required
             />
           </div>
+
           <div>
             <label className="text-sm font-medium text-gray-600">Email</label>
             <input
@@ -26,6 +27,7 @@ export default function ModalEditAdmin({ show, form, updateForm, onSubmit, onClo
               required
             />
           </div>
+
           <div>
             <label className="text-sm font-medium text-gray-600">
               Password <span className="text-gray-400 font-normal">(kosongkan jika tidak diganti)</span>
@@ -34,45 +36,20 @@ export default function ModalEditAdmin({ show, form, updateForm, onSubmit, onClo
               type="password"
               value={form.password}
               onChange={(e) => updateForm({ password: e.target.value })}
+              placeholder="Minimal 6 karakter"
+              minLength={6}
               className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
             />
           </div>
+
           <div>
             <label className="text-sm font-medium text-gray-600">Role</label>
             <input
               type="text"
-              value={form.role}
-              onChange={(e) => updateForm({ role: e.target.value.toUpperCase() })}
-              placeholder="Contoh: ADMIN, GURU"
-              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-              required
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-600">No. HP</label>
-            <input
-              type="text"
-              value={form.no_hp}
-              onChange={(e) => updateForm({ no_hp: e.target.value })}
-              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-600">Alamat</label>
-            <input
-              type="text"
-              value={form.alamat}
-              onChange={(e) => updateForm({ alamat: e.target.value })}
-              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-600">Umur</label>
-            <input
-              type="number"
-              value={form.umur}
-              onChange={(e) => updateForm({ umur: e.target.value })}
-              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+              value="ADMIN"
+              disabled
+              readOnly
+              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
             />
           </div>
 
