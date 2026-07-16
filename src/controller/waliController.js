@@ -55,4 +55,17 @@ export const waliController = {
 
     return results;
   },
+  editWali: async (id, formData) => {
+    const res = await waliService.update(id, {
+      ...formData,
+      role: "WALI",
+    });
+
+    return res.data;
+  },
+
+  deleteWali: async (id) => {
+    const res = await waliService.delete(id);
+    return res.data;
+  },
 };

@@ -5,7 +5,6 @@ import ModalTambahWali from "../../components/wali/ModalTambahWali";
 import ModalEditWali from "../../components/wali/ModalEditWali";
 import ModalDeleteWali from "../../components/wali/ModalDeleteWali";
 import { useWaliList } from "../../hooks/useWaliList";
-import { useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { waliController } from "../../controller/waliController";
 
@@ -234,13 +233,13 @@ function WaliCard({ wali, onEdit, onDelete }) {
                 onClick={(e) => { e.stopPropagation(); setOpen(false); onEdit(); }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
               >
-                ✏️ Edit
+                Edit
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(); }}
                 className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
               >
-                🗑️ Hapus
+                Hapus
               </button>
             </div>
           )}
