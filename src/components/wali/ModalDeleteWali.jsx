@@ -11,6 +11,7 @@ export default function ModalDeleteWali({ wali, onClose, onSuccess }) {
     try {
       await waliController.deleteWali(wali.id);
       onSuccess();
+      onClose();
     } catch (err) {
       setError(err.message);
     } finally {

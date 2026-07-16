@@ -65,11 +65,11 @@ export default function DashboardPage() {
             </p>
           </header>
 
-          <section className="grid grid-cols-4 gap-4">
+          {/* <section className="grid grid-cols-4 gap-4">
             {STATS.map((s) => (
               <StatsCard key={s.label} {...s} />
             ))}
-          </section>
+          </section> */}
 
           <section className="grid grid-cols-2 gap-5">
             <div

@@ -5,9 +5,12 @@ import ModalTambahWali from "../../components/wali/ModalTambahWali";
 import ModalEditWali from "../../components/wali/ModalEditWali";
 import ModalDeleteWali from "../../components/wali/ModalDeleteWali";
 import { useWaliList } from "../../hooks/useWaliList";
+import * as XLSX from "xlsx";
+import { waliController } from "../../controller/waliController";
 
 export default function WaliPage() {
   const [search, setSearch] = useState("");
+  const fileInputRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [editWali, setEditWali] = useState(null);
   const [deleteWali, setDeleteWali] = useState(null);
@@ -30,12 +33,62 @@ export default function WaliPage() {
   }
 
   const filtered = waliList.filter((w) =>
-    w.nama.toLowerCase().includes(search.toLowerCase())
+    w.nama.toLowerCase().includes(search.toLowerCase()),
   );
+  const handleImportExcel = () => {
+    fileInputRef.current?.click();
+  };
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const data = await file.arrayBuffer();
+
+    const workbook = XLSX.read(data);
+
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+    const mappedData = jsonData.map((item) => ({
+      nama: item.nama,
+      email: item.email,
+      password: item.password,
+      tanggal_lahir: item.tanggal_lahir,
+      peran: item.peran,
+    }));
+
+    const invalidData = mappedData.filter(
+      (item) =>
+        !item.nama ||
+        !item.email ||
+        !item.password ||
+        !item.tanggal_lahir ||
+        !item.peran,
+    );
+
+    if (invalidData.length > 0) {
+      alert("Masih ada data yang belum lengkap");
+      return;
+    }
+
+    const result = await waliController.createMany(mappedData);
+
+    console.log(result);
+
+    await refetch();
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 font-nunito">
       <Sidebar />
+      <input
+        type="file"
+        accept=".xlsx,.xls"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
 
       <main className="ml-60 flex-1 min-w-0 px-8 py-6 flex flex-col gap-6">
         {/* Top bar */}
@@ -49,6 +102,18 @@ export default function WaliPage() {
               className="bg-transparent outline-none text-sm text-gray-600 placeholder:text-gray-400 w-full font-nunito"
             />
           </label>
+          <button
+            onClick={handleImportExcel}
+            className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap"
+          >
+            Import Excel
+          </button>
+          <button
+            onClick={() => {}}
+            className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap"
+          >
+            Download Template
+          </button>
           <button
             onClick={() => setShowModal(true)}
             className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap"
@@ -168,13 +233,13 @@ function WaliCard({ wali, onEdit, onDelete }) {
                 onClick={(e) => { e.stopPropagation(); setOpen(false); onEdit(); }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
               >
-                ✏️ Edit
+                Edit
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(); }}
                 className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
               >
-                🗑️ Hapus
+                Hapus
               </button>
             </div>
           )}

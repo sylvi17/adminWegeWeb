@@ -15,6 +15,9 @@ export default function ModalEditWali({ wali, onClose, onSuccess }) {
   }
 
   async function handleSubmit() {
+    console.log("WALI =", wali);
+    console.log("FORM =", form);
+
     if (!form.nama || !form.peran) {
       setError("Nama dan peran wajib diisi.");
       return;
@@ -22,7 +25,7 @@ export default function ModalEditWali({ wali, onClose, onSuccess }) {
     setLoading(true);
     setError(null);
     try {
-      await waliController.editWali(wali.id, form);
+      await waliController.editWali(wali.userId ?? wali.id, form);
       onSuccess();
       onClose();
     } catch (err) {
@@ -36,13 +39,22 @@ export default function ModalEditWali({ wali, onClose, onSuccess }) {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-[18px] shadow-2xl w-full max-w-md mx-4">
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0f0f0]">
-          <h2 className="text-[1rem] font-extrabold text-[#1a1a1a]">Edit Wali Murid</h2>
-          <button onClick={onClose} className="text-[#aaa] hover:text-[#555] text-xl leading-none">✕</button>
+          <h2 className="text-[1rem] font-extrabold text-[#1a1a1a]">
+            Edit Wali Murid
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-[#aaa] hover:text-[#555] text-xl leading-none"
+          >
+            ✕
+          </button>
         </div>
 
         <div className="px-6 py-5 space-y-3">
           <div>
-            <label className="text-[0.75rem] text-[#999] mb-1 block">Nama Lengkap <span className="text-red-400">*</span></label>
+            <label className="text-[0.75rem] text-[#999] mb-1 block">
+              Nama Lengkap <span className="text-red-400">*</span>
+            </label>
             <input
               name="nama"
               value={form.nama}
@@ -54,7 +66,9 @@ export default function ModalEditWali({ wali, onClose, onSuccess }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[0.75rem] text-[#999] mb-1 block">Tanggal Lahir</label>
+              <label className="text-[0.75rem] text-[#999] mb-1 block">
+                Tanggal Lahir
+              </label>
               <input
                 name="tanggal_lahir"
                 type="date"
@@ -64,14 +78,18 @@ export default function ModalEditWali({ wali, onClose, onSuccess }) {
               />
             </div>
             <div>
-              <label className="text-[0.75rem] text-[#999] mb-1 block">Peran <span className="text-red-400">*</span></label>
+              <label className="text-[0.75rem] text-[#999] mb-1 block">
+                Peran <span className="text-red-400">*</span>
+              </label>
               <select
                 name="peran"
                 value={form.peran}
                 onChange={handleChange}
                 className="w-full border border-[#eee] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-[#555]"
               >
-                <option value="" disabled>Pilih peran</option>
+                <option value="" disabled>
+                  Pilih peran
+                </option>
                 <option value="ibu">Ibu</option>
                 <option value="ayah">Ayah</option>
                 <option value="wali">Wali</option>
@@ -83,7 +101,10 @@ export default function ModalEditWali({ wali, onClose, onSuccess }) {
         </div>
 
         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#f0f0f0]">
-          <button onClick={onClose} className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold">
+          <button
+            onClick={onClose}
+            className="text-sm px-4 py-2 rounded-full border border-[#eee] text-[#555] hover:bg-[#f9f9f9] transition font-bold"
+          >
             Batal
           </button>
           <button
