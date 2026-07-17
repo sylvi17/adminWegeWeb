@@ -33,7 +33,7 @@ export default function ModalTambahGuru({ onClose, onSuccess }) {
     try {
       const payload = {
         ...form,
-        no_hp: form.no_hp || null, // kirim String langsung, tidak perlu parseInt
+        no_hp: form.no_hp ? parseInt(form.no_hp, 10) : null,
       };
       await guruController.create(payload);
       onSuccess();

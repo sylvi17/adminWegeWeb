@@ -3,22 +3,36 @@ import { useState, useEffect, useCallback } from "react";
 import { waliController } from "../controller/waliController";
 
 export function useWaliList() {
-  const [data,    setData]    = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState("");
+  const [error, setError] = useState("");
 
-  const fetch = useCallback(() => {
+  const fetch = useCallback(async () => {
     setLoading(true);
     setError("");
-    waliController.getAll()
-      .then(setData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+
+    try {
+      const data = await waliController.getAll();
+      setData(data);
+    } catch (err) {
+      if (err.message === "Data wali tidak ditemukan") {
+        setData([]);
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     fetch();
   }, [fetch]);
 
-  return { data, loading, error, refetch: fetch };
+  return {
+    data,
+    loading,
+    error,
+    refetch: fetch,
+  };
 }

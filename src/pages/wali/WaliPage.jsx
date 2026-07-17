@@ -7,6 +7,7 @@ import ModalDeleteWali from "../../components/wali/ModalDeleteWali";
 import { useWaliList } from "../../hooks/useWaliList";
 import * as XLSX from "xlsx";
 import { waliController } from "../../controller/waliController";
+import ModalPreviewImportWali from "../../components/wali/ModalPreviewImportWali";
 
 export default function WaliPage() {
   const [search, setSearch] = useState("");
@@ -16,6 +17,8 @@ export default function WaliPage() {
   const [deleteWali, setDeleteWali] = useState(null);
   const { data: waliList, loading, error, refetch } = useWaliList();
 
+  const [previewData, setPreviewData] = useState([]);
+  const [showPreview, setShowPreview] = useState(false);
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -31,6 +34,19 @@ export default function WaliPage() {
       </div>
     );
   }
+  const handleDownloadTemplate = () => {
+    const link = document.createElement("a");
+
+    link.href = "/template/template_wali.xlsx";
+
+    link.download = "Template_Import_Wali.xlsx";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  };
 
   const filtered = waliList.filter((w) =>
     w.nama.toLowerCase().includes(search.toLowerCase()),
@@ -39,45 +55,59 @@ export default function WaliPage() {
     fileInputRef.current?.click();
   };
   const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    const data = await file.arrayBuffer();
+  const data = await file.arrayBuffer();
 
-    const workbook = XLSX.read(data);
+  const workbook = XLSX.read(data);
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+  const mappedData = jsonData.map((item) => ({
+    nama: item.nama,
+    email: item.email,
+    password: String(item.password),
+    tanggal_lahir: item.tanggal_lahir,
+    peran: item.peran,
+  }));
 
-    const mappedData = jsonData.map((item) => ({
-      nama: item.nama,
-      email: item.email,
-      password: item.password,
-      tanggal_lahir: item.tanggal_lahir,
-      peran: item.peran,
-    }));
+  setPreviewData(mappedData);
+  setShowPreview(true);
+};
 
-    const invalidData = mappedData.filter(
-      (item) =>
-        !item.nama ||
-        !item.email ||
-        !item.password ||
-        !item.tanggal_lahir ||
-        !item.peran,
-    );
+const handleConfirmImport = async () => {
+  const invalidData = previewData.filter(
+    (item) =>
+      !item.nama ||
+      !item.email ||
+      !item.password ||
+      !item.tanggal_lahir ||
+      !item.peran
+  );
 
-    if (invalidData.length > 0) {
-      alert("Masih ada data yang belum lengkap");
-      return;
-    }
+  if (invalidData.length > 0) {
+    alert("Masih ada data yang belum lengkap");
+    return;
+  }
 
-    const result = await waliController.createMany(mappedData);
+  await waliController.createMany(previewData);
 
-    console.log(result);
+  await refetch();
 
-    await refetch();
-  };
+  setShowPreview(false);
+  setPreviewData([]);
+};
+const handleImportData = async () => {
+  const result = await waliController.createMany(previewData);
+
+  console.log(result);
+
+  setShowPreview(false);
+
+  await refetch();
+};
 
   return (
     <div className="flex min-h-screen bg-gray-100 font-nunito">
@@ -109,7 +139,7 @@ export default function WaliPage() {
             Import Excel
           </button>
           <button
-            onClick={() => {}}
+            onClick={handleDownloadTemplate}
             className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap"
           >
             Download Template
@@ -160,7 +190,10 @@ export default function WaliPage() {
       {showModal && (
         <ModalTambahWali
           onClose={() => setShowModal(false)}
-          onSuccess={() => { setShowModal(false); refetch(); }}
+          onSuccess={() => {
+            setShowModal(false);
+            refetch();
+          }}
         />
       )}
 
@@ -169,7 +202,10 @@ export default function WaliPage() {
         <ModalEditWali
           wali={editWali}
           onClose={() => setEditWali(null)}
-          onSuccess={() => { setEditWali(null); refetch(); }}
+          onSuccess={() => {
+            setEditWali(null);
+            refetch();
+          }}
         />
       )}
 
@@ -178,12 +214,24 @@ export default function WaliPage() {
         <ModalDeleteWali
           wali={deleteWali}
           onClose={() => setDeleteWali(null)}
-          onSuccess={() => { setDeleteWali(null); refetch(); }}
+          onSuccess={() => {
+            setDeleteWali(null);
+            refetch();
+          }}
+        />
+      )}
+
+      {showPreview && (
+        <ModalPreviewImportWali
+          data={previewData}
+          onClose={() => setShowPreview(false)}
+          onImport={handleImportData}
+          existingEmails={waliList.map(w => w.email.toLowerCase())}
         />
       )}
     </div>
   );
-}
+
 
 // ── Wali Card ──────────────────────────────────────────────────
 function WaliCard({ wali, onEdit, onDelete }) {
@@ -213,15 +261,22 @@ function WaliCard({ wali, onEdit, onDelete }) {
             {wali.nama.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="font-extrabold text-[#1a1a1a] text-[1rem]">{wali.nama}</p>
-            <p className="text-xs text-[#aaa] capitalize">{wali.peran} • Tahun</p>
+            <p className="font-extrabold text-[#1a1a1a] text-[1rem]">
+              {wali.nama}
+            </p>
+            <p className="text-xs text-[#aaa] capitalize">
+              {wali.peran} • Tahun
+            </p>
           </div>
         </div>
 
         {/* Kanan: dropdown aksi */}
         <div className="relative" ref={ref}>
           <button
-            onClick={(e) => { e.stopPropagation(); setOpen((prev) => !prev); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen((prev) => !prev);
+            }}
             className="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors text-lg flex items-center justify-center"
           >
             ⋮
@@ -230,13 +285,21 @@ function WaliCard({ wali, onEdit, onDelete }) {
           {open && (
             <div className="absolute right-0 top-9 z-50 bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-36">
               <button
-                onClick={(e) => { e.stopPropagation(); setOpen(false); onEdit(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(false);
+                  onEdit();
+                }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
               >
                 Edit
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(false);
+                  onDelete();
+                }}
                 className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
               >
                 Hapus
@@ -251,8 +314,11 @@ function WaliCard({ wali, onEdit, onDelete }) {
         onClick={() => navigate(`/wali-murid/${wali.id}`)}
       >
         <p className="text-xs text-[#aaa]">Jumlah Anak</p>
-        <p className="text-sm font-extrabold text-teal-500">{wali.jumlahMurid} Murid</p>
+        <p className="text-sm font-extrabold text-teal-500">
+          {wali.jumlahMurid} Murid
+        </p>
       </div>
     </div>
   );
+}
 }
