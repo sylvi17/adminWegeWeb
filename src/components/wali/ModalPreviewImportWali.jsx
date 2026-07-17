@@ -1,0 +1,185 @@
+export default function ModalPreviewImportWali({
+  data,
+  existingEmails,
+  onClose,
+  onImport,
+}) {
+  const emailSet = new Set();
+  const validatedData = data.map((item) => {
+    const errors = [];
+
+    // Nama
+    if (!item.nama) {
+      errors.push("Nama wajib diisi");
+    }
+
+    // Email
+    const email = item.email?.toLowerCase().trim();
+
+    if (!email) {
+      errors.push("Email wajib diisi");
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.push("Format email tidak valid");
+    } else {
+      if (emailSet.has(email)) {
+        errors.push("Email duplikat di file Excel");
+      }
+
+      if (existingEmails.includes(email)) {
+        errors.push("Email sudah digunakan");
+      }
+
+      emailSet.add(email);
+    }
+
+    // Password
+    if (!item.password) {
+      errors.push("Password wajib diisi");
+    } else if (String(item.password).length < 6) {
+      errors.push("Password minimal 6 karakter");
+    }
+
+    // Tanggal lahir
+    if (!item.tanggal_lahir) {
+      errors.push("Tanggal lahir wajib diisi");
+    }
+
+    // Peran
+    if (!item.peran) {
+      errors.push("Peran wajib diisi");
+    } else if (!["ayah", "ibu", "wali"].includes(item.peran.toLowerCase())) {
+      errors.push("Peran harus Ayah, Ibu, atau Wali");
+    }
+
+    return {
+      ...item,
+      valid: errors.length === 0,
+      errors,
+    };
+  });
+
+  const total = validatedData.length;
+  const valid = validatedData.filter((x) => x.valid).length;
+  const invalid = total - valid;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl w-[1100px] max-h-[90vh] flex flex-col shadow-xl">
+        {/* Header */}
+        <div className="p-6 border-b">
+          <h2 className="text-2xl font-bold">Preview Import Wali</h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Periksa data sebelum diimport ke sistem.
+          </p>
+        </div>
+
+        {/* Summary */}
+        <div className="grid grid-cols-3 gap-4 p-6 pb-2">
+          <div className="rounded-xl bg-slate-100 p-4">
+            <p className="text-sm text-slate-500">Total Data</p>
+
+            <h3 className="text-3xl font-bold">{total}</h3>
+          </div>
+
+          <div className="rounded-xl bg-green-100 p-4">
+            <p className="text-sm text-green-700">Valid</p>
+
+            <h3 className="text-3xl font-bold text-green-700">{valid}</h3>
+          </div>
+
+          <div className="rounded-xl bg-red-100 p-4">
+            <p className="text-sm text-red-700">Error</p>
+
+            <h3 className="text-3xl font-bold text-red-700">{invalid}</h3>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-auto px-6 pb-4">
+          <table className="w-full border text-sm">
+            <thead className="bg-gray-100 sticky top-0">
+              <tr>
+                <th className="border p-2">No</th>
+                <th className="border p-2">Nama</th>
+                <th className="border p-2">Email</th>
+                <th className="border p-2">Password</th>
+                <th className="border p-2">Tanggal Lahir</th>
+                <th className="border p-2">Peran</th>
+                <th className="border p-2">Status</th>
+                <th className="border p-2">Keterangan</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {validatedData.map((item, index) => (
+                <tr
+                  key={index}
+                  className={item.valid ? "bg-white" : "bg-red-50"}
+                >
+                  <td className="border p-2 text-center">{index + 1}</td>
+
+                  <td className="border p-2">{item.nama || "-"}</td>
+
+                  <td className="border p-2">{item.email || "-"}</td>
+
+                  <td className="border p-2">{item.password || "-"}</td>
+
+                  <td className="border p-2">{item.tanggal_lahir || "-"}</td>
+
+                  <td className="border p-2">{item.peran || "-"}</td>
+
+                  <td className="border p-2 text-center">
+                    {item.valid ? (
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        Valid
+                      </span>
+                    ) : (
+                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        Error
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="border p-2">
+                    {item.valid ? (
+                      <span className="text-green-600">Siap diimport</span>
+                    ) : (
+                      <ul className="list-disc pl-4 text-red-500">
+                        {item.errors.map((err, i) => (
+                          <li key={i}>{err}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t p-5 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-lg border hover:bg-gray-100"
+          >
+            Batal
+          </button>
+
+          <button
+            disabled={invalid > 0}
+            onClick={onImport}
+            className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
+              invalid > 0
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-teal-500 hover:bg-teal-600"
+            }`}
+          >
+            Import ({valid})
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

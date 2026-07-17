@@ -21,10 +21,11 @@ export const guruController = {
     const res = await guruService.create({
       ...formData,
       role: "GURU",
-      no_hp: String(formData.no_hp),
+      no_hp: formData.no_hp ? Number(formData.no_hp) : null,
     });
     return res.data;
   },
+
   createMany: async (guruList) => {
     const results = [];
 
@@ -36,13 +37,11 @@ export const guruController = {
           success: true,
           data: result,
         });
-      } catch (error) {
-        console.error("IMPORT ERROR:", error.response?.data);
-
+      } catch (err) {
         results.push({
           success: false,
           data: guru,
-          error: error.response?.data ?? error.message,
+          error: err.message,
         });
       }
     }

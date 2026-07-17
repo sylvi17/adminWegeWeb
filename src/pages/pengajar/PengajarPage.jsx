@@ -7,6 +7,7 @@ import PengajarActivityLog from "../../components/pengajar/PengajarActivityLog";
 import ModalTambahGuru from "../../components/pengajar/ModalTambahGuru";
 import ModalEditPengajar from "../../components/pengajar/ModalEditPengajar";
 import ModalDeletePengajar from "../../components/pengajar/ModalDeletePengajar";
+import ModalPreviewImportGuru from "../../components/pengajar/ModalPreviewImpostGuru";
 import { useGuruList } from "../../hooks/useGuruList";
 import { guruController } from "../../controller/guruController";
 import * as XLSX from "xlsx";
@@ -21,41 +22,49 @@ export default function PengajarPage() {
 
   const [excelData, setExcelData] = useState([]);
   const fileInputRef = useRef(null);
+  const handleDownloadTemplate = () => {
+    const link = document.createElement("a");
 
+    link.href = "/template/template_pengajar.xlsx";
+
+    link.download = "Template_Import_Pengajar.xlsx";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  };
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
     const mappedData = jsonData.map((item) => ({
-      ...item,
-      role: "GURU",
+      nama: String(item.nama ?? "").trim(),
+      email: String(item.email ?? "").trim(),
+      password: String(item.password ?? ""),
+      no_hp: String(item.no_hp ?? "").trim(),
+      alamat: String(item.alamat ?? "").trim(),
     }));
 
     const invalidData = mappedData.filter(
       (item) => !item.nama || !item.email || !item.password,
     );
+
     if (invalidData.length > 0) {
       alert("Masih ada data yang belum lengkap");
       return;
     }
-    setExcelData(mappedData);
-    try {
-      console.log("DATA IMPORT:");
-      console.table(mappedData);
-      console.log(mappedData);
-      const result = await guruController.createMany(mappedData);
-      console.table(result);
-      await refetch();
-      e.target.value = "";
-      alert("Import berhasil");
-    } catch (error) {
-      console.error(error);
-      alert("Import gagal");
-    }
+
+    setPreviewData(mappedData);
+    setShowPreview(true);
+
+    e.target.value = "";
   };
 
   const { data: pengajarList, loading, error, refetch } = useGuruList();
@@ -73,6 +82,18 @@ export default function PengajarPage() {
   const handleImportExcel = () => {
     fileInputRef.current?.click();
   };
+  const [previewData, setPreviewData] = useState([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const handleImportData = async () => {
+    const result = await guruController.createMany(previewData);
+
+    console.table(result);
+
+    await refetch();
+
+    setShowPreview(false);
+    setPreviewData([]);
+  };
 
   return (
     <div className="flex min-h-screen bg-[#f0f0f0] font-nunito">
@@ -88,13 +109,14 @@ export default function PengajarPage() {
         <PengajarHeader
           onTambah={() => setShowModal(true)}
           onExcel={handleImportExcel}
+          handleDownloadTemplate={handleDownloadTemplate}
         />
-        <PengajarStats
+        {/* <PengajarStats
           total={stats.total}
           aktif={stats.aktif}
           izin={stats.izin}
           loading={loading}
-        />
+        /> */}
         <PengajarTable
           data={paginatedData}
           page={page}
@@ -134,6 +156,14 @@ export default function PengajarPage() {
             setDeletePengajar(null);
             refetch();
           }}
+        />
+      )}
+      {showPreview && (
+        <ModalPreviewImportGuru
+          data={previewData}
+          onClose={() => setShowPreview(false)}
+          onImport={handleImportData}
+          existingEmails={pengajarList.map((w) => w.email.toLowerCase())}
         />
       )}
     </div>

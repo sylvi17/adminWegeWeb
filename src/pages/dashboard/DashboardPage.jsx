@@ -79,14 +79,8 @@ export default function DashboardPage() {
               }}
             >
               <h2 className="text-[1.2rem] font-extrabold">
-                Input Progress Santri
+                Jumlah Guru
               </h2>
-              <p className="text-[0.88rem] opacity-90 leading-relaxed">
-                Catat pencapaian hari ini dengan cepat
-              </p>
-              <button className="mt-3 self-start bg-transparent border-2 border-white/80 hover:bg-white/20 hover:border-white rounded-full px-[22px] py-[9px] text-white font-bold text-[0.88rem] cursor-pointer transition-all">
-                Mulai Input
-              </button>
             </div>
 
             <div
@@ -95,13 +89,26 @@ export default function DashboardPage() {
                 background: "linear-gradient(135deg, #2e7d32 0%, #43a047 100%)",
               }}
             >
-              <h2 className="text-[1.2rem] font-extrabold">Laporan Bulanan</h2>
-              <p className="text-[0.88rem] opacity-90 leading-relaxed">
-                Unduh rangkuman bulanan untuk orang tua
-              </p>
-              <button className="mt-3 self-start bg-transparent border-2 border-white/80 hover:bg-white/20 hover:border-white rounded-full px-[22px] py-[9px] text-white font-bold text-[0.88rem] cursor-pointer transition-all">
-                Unduh PDF
-              </button>
+              <h2 className="text-[1.2rem] font-extrabold">Jumlah Laporan Bulan Ini</h2>
+            </div>
+
+            <div
+              className="rounded-[18px] px-7 pt-7 pb-6 flex flex-col gap-2 text-white"
+              style={{
+                background: "linear-gradient(135deg, #2e7d32 0%, #43a047 100%)",
+              }}
+            >
+              <h2 className="text-[1.2rem] font-extrabold">Jumlah Laporan Terverifikasi</h2>
+            </div>
+            <div
+              className="rounded-[18px] px-7 pt-7 pb-6 flex flex-col gap-2 text-white"
+              style={{
+                background: "linear-gradient(135deg, #26a69a 0%, #4db6ac 100%)",
+              }}
+            >
+              <h2 className="text-[1.2rem] font-extrabold">
+                Penambahan Siswa Bulan Ini
+              </h2>
             </div>
           </section>
 
