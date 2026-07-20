@@ -63,7 +63,7 @@ export default function ManajemenAdminPage() {
 
         <PageHeader
           title="Manajemen Akun Admin"
-          subtitle="Selamat mengerjakan~~~~"
+          subtitle="ini halaman manajemen admin"
         />
 
         {error && (

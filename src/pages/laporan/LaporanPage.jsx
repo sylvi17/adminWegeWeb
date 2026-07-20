@@ -5,6 +5,7 @@ import PageHeader from "../../components/layout/Header";
 import StatusFilter from "../../components/ui/StatusFilter";
 import ReportTable from "../../components/laporan/ReportTable";
 import KenaikanTable from "../../components/laporan/KenaikanTable";
+import ModalSantriDetail from "../../components/laporan/ModalSantriDetail";
 import { useNilai } from "../../hooks/useNilai";
 import { useKenaikanJilid } from "../../hooks/useKenaikanJilid";
 
@@ -18,16 +19,25 @@ const TABS = [
 export default function LaporanPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Semua");
+  const [jilidFilter, setJilidFilter] = useState("Semua");
   const [page, setPage] = useState(1);
   const [tab, setTab] = useState("harian");
+  const [selectedSantri, setSelectedSantri] = useState(null);
+
   const filterOptions =
     tab === "harian"
       ? ["Semua", "LANCAR", "KURANG_LANCAR", "TIDAK_LANCAR"]
       : ["Semua", "LULUS", "TIDAK_LULUS"];
+
   const { data: nilaiList, loading: l1, error: e1 } = useNilai();
   const { data: kenaikanList, loading: l2, error: e2 } = useKenaikanJilid();
 
   const activeList = tab === "harian" ? nilaiList : kenaikanList;
+
+  const jilidOptions = useMemo(() => {
+    const unique = [...new Set(activeList.map((d) => d.jilid))].sort();
+    return ["Semua", ...unique];
+  }, [activeList]);
 
   const filtered = useMemo(
     () =>
@@ -36,13 +46,21 @@ export default function LaporanPage() {
         const matchStatus =
           status === "Semua" ||
           (tab === "harian" ? d.nilaiBacaan : d.statusKelulusan) === status;
-        return matchSearch && matchStatus;
+        const matchJilid = jilidFilter === "Semua" || d.jilid === jilidFilter;
+        return matchSearch && matchStatus && matchJilid;
       }),
-    [search, status, tab, activeList],
+    [search, status, jilidFilter, tab, activeList],
   );
 
   const totalPage = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const rows = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  const santriHistory = useMemo(() => {
+    if (!selectedSantri) return [];
+    return nilaiList
+      .filter((d) => d.nama === selectedSantri.nama)
+      .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+  }, [selectedSantri, nilaiList]);
 
   const loading = l1 || l2;
   const error = e1 || e2;
@@ -89,6 +107,7 @@ export default function LaporanPage() {
                     setTab(t.id);
                     setPage(1);
                     setStatus("Semua");
+                    setJilidFilter("Semua");
                   }}
                   className={[
                     "px-4 py-1.5 rounded-full text-xs font-bold transition-all",
@@ -102,19 +121,40 @@ export default function LaporanPage() {
               ))}
             </div>
 
-            <StatusFilter
-              current={status}
-              onChange={(value) => {
-                setStatus(value);
-                setPage(1);
-              }}
-              options={filterOptions}
-            />
+            {/* Filter jilid + status */}
+            <div className="flex items-center gap-3">
+              <select
+                value={jilidFilter}
+                onChange={(e) => {
+                  setJilidFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="rounded-full border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 bg-white outline-none hover:bg-gray-50 cursor-pointer"
+              >
+                {jilidOptions.map((j) => (
+                  <option key={j} value={j}>
+                    {j === "Semua" ? "Semua Jilid" : j.replace("_", " ")}
+                  </option>
+                ))}
+              </select>
+
+              <StatusFilter
+                current={status}
+                onChange={(value) => {
+                  setStatus(value);
+                  setPage(1);
+                }}
+                options={filterOptions}
+              />
+            </div>
           </div>
 
           {/* Tabel */}
           {tab === "harian" ? (
-            <ReportTable rows={rows} />
+            <ReportTable
+              rows={rows}
+              onRowClick={(row) => setSelectedSantri(row)}
+            />
           ) : (
             <KenaikanTable rows={rows} />
           )}
@@ -148,6 +188,12 @@ export default function LaporanPage() {
           </div>
         </div>
       </main>
+
+      <ModalSantriDetail
+        santri={selectedSantri}
+        history={santriHistory}
+        onClose={() => setSelectedSantri(null)}
+      />
     </div>
   );
 }
