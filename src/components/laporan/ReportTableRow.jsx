@@ -1,8 +1,11 @@
 import StatusBadge from "./Badge";
 
-export default function ReportTableRow({ row }) {
+export default function ReportTableRow({ row, onRowClick }) {
   return (
-    <tr className="hover:bg-[#fafafa] transition-colors">
+    <tr
+      onClick={() => onRowClick?.(row)}
+      className="hover:bg-[#fafafa] transition-colors cursor-pointer"
+    >
       <td className="px-6 py-[18px] border-b border-[#f5f5f5]">
         <div className="font-bold text-[#1a1a1a] text-[0.92rem]">
           {row.nama}

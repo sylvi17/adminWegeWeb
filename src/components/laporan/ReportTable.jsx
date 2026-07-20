@@ -1,6 +1,6 @@
 import ReportTableRow from "./ReportTableRow";
 
-export default function ReportTable({ rows }) {
+export default function ReportTable({ rows, onRowClick }) {
   if (!rows.length) {
     return (
       <div className="p-10 text-center text-[#aaa] text-[0.9rem]">
@@ -41,10 +41,7 @@ export default function ReportTable({ rows }) {
 
       <tbody>
         {rows.map((row) => (
-          <ReportTableRow
-            key={row.id}
-            row={row}
-          />
+          <ReportTableRow key={row.id} row={row} onRowClick={onRowClick} />
         ))}
       </tbody>
     </table>
