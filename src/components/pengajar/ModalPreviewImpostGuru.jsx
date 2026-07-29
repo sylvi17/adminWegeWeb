@@ -40,7 +40,7 @@ export default function ModalPreviewImportGuru({
       <div className="bg-white rounded-2xl w-[1100px] max-h-[90vh] flex flex-col shadow-xl">
         {/* Header */}
         <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold">Preview Import Wali</h2>
+          <h2 className="text-2xl font-bold">Preview Import Guru</h2>
 
           <p className="text-sm text-gray-500 mt-1">
             Periksa data sebelum diimport ke sistem.
