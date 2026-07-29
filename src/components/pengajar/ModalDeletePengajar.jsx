@@ -3,17 +3,23 @@ import apiClient from "../../services/api";
 
 export default function ModalDeletePengajar({ pengajar, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   async function handleDelete() {
     setLoading(true);
     setError(null);
     try {
-      // ✅ pakai userId, bukan id
       await apiClient.delete(`/admin/users/${pengajar.userId}`);
       onSuccess();
     } catch (err) {
-      setError(err.message ?? "Gagal menghapus pengajar.");
+      const msg = err.message ?? "";
+      if (msg.includes("Foreign key") || msg.includes("guruId")) {
+        setError(
+          "Pengajar ini masih memiliki murid terdaftar. Pindahkan atau hapus murid terlebih dahulu sebelum menghapus pengajar."
+        );
+      } else {
+        setError(msg || "Gagal menghapus pengajar.");
+      }
     } finally {
       setLoading(false);
     }
