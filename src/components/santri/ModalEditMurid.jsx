@@ -15,13 +15,20 @@ function hitungUmur(tanggal_lahir) {
   return umur;
 }
 
+// "JILID 4" → "JILID_4" (kembalikan ke format Prisma)
+function reverseFormatJilid(jilid) {
+  if (!jilid) return "";
+  return jilid.replace(/ /g, "_");
+}
+
 export default function ModalEditMurid({ murid, onClose, onSuccess }) {
   const [form, setForm] = useState({
-    nama:          murid.nama          ?? "",
-    umur:          murid.umur          ?? "",
+    nama:          murid.nama         ?? "",
+    umur:          murid.umur         ?? "",
     tanggal_lahir: "",
-    jenisKelamin:  murid.jenisKelamin  ?? "",
-    jilidSekarang: murid.jilid         ?? "",
+    jenisKelamin:  murid.jenisKelamin ?? "",
+    // ← reverse format agar match dengan JILID_OPTIONS
+    jilidSekarang: reverseFormatJilid(murid.jilid ?? ""),
   });
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState(null);
@@ -71,7 +78,6 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
 
         {/* Body */}
         <div className="px-6 py-5 space-y-3">
-
           <div>
             <label className="text-xs text-gray-400 font-semibold mb-1 block">
               Nama Lengkap <span className="text-red-400">*</span>
@@ -127,7 +133,9 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
             >
               <option value="">Belum ditentukan</option>
               {JILID_OPTIONS.map((j) => (
-                <option key={j} value={j}>{j.replace("_", " ")}</option>
+                <option key={j} value={j}>
+                  {j.replace(/_/g, " ")}
+                </option>
               ))}
             </select>
           </div>

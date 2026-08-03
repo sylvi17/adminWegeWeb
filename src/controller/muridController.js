@@ -1,6 +1,12 @@
 import { muridService } from "../services/muridService";
 import apiClient from "../services/api";
 
+// helper untuk format jilid
+function formatJilid(jilidSekarang) {
+  if (!jilidSekarang) return "Belum Ada Jilid";
+  return String(jilidSekarang).replace(/_/g, " ");
+}
+
 export const muridController = {
   getAll: async () => {
     const res = await muridService.getAll();
@@ -9,7 +15,7 @@ export const muridController = {
       nama:         m.nama,
       umur:         m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid:        m.jilidSekarang,
+      jilid:        formatJilid(m.jilidSekarang),
       guru:         m.guru?.nama ?? "-",
       wali:         m.waliMurid?.nama ?? "-",
     }));
@@ -23,7 +29,7 @@ export const muridController = {
       nama:         m.nama,
       umur:         m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid:        m.jilidSekarang,
+      jilid:        formatJilid(m.jilidSekarang),
       guru:         m.guru?.nama ?? "-",
       guruNoHp:     m.guru?.no_hp ?? "-",
       wali:         m.waliMurid?.nama ?? "-",
@@ -38,7 +44,7 @@ export const muridController = {
       nama:         m.nama,
       umur:         m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid:        m.jilidSekarang ?? "-",
+      jilid:        formatJilid(m.jilidSekarang),
       wali:         m.waliMurid?.nama ?? "-",
        guru:         m.guru?.nama ?? "-",
     }));
