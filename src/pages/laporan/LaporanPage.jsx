@@ -26,8 +26,8 @@ export default function LaporanPage() {
 
   const filterOptions =
     tab === "harian"
-      ? ["Semua", "LANCAR", "KURANG_LANCAR", "TIDAK_LANCAR"]
-      : ["Semua", "LULUS", "TIDAK_LULUS"];
+      ? ["Semua", "LANCAR", "CUKUP_LANCAR", "TIDAK_LANCAR"]
+      : ["Semua", "LULUS", "MENGULANG"];
 
   const { data: nilaiList, loading: l1, error: e1 } = useNilai();
   const { data: kenaikanList, loading: l2, error: e2 } = useKenaikanJilid();
