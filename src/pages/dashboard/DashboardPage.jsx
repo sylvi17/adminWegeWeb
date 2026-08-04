@@ -3,14 +3,6 @@ import Sidebar from "../../components/layout/Sidebar";
 import PengajarActivityLog from "../../components/pengajar/PengajarActivityLog";
 import useActivityLogs from "../../hooks/useActivityLogs";
 import { Users2, Check, Star } from "lucide-react";
-
-
-export default function DashboardPage() {
-  const {
-        activities,
-        loading,
-        refetch,
-    } = useActivityLogs();
 import { guruService } from "../../services/guruService";
 import { muridService } from "../../services/muridService";
 import { waliController } from "../../controller/waliController";
@@ -128,5 +120,4 @@ export default function DashboardPage() {
       </div>
     </>
   );
-}
 }
