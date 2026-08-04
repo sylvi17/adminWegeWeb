@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/layout/Sidebar";
 import PengajarActivityLog from "../../components/pengajar/PengajarActivityLog";
 import useActivityLogs from "../../hooks/useActivityLogs";
+import { Users2, Check, Star } from "lucide-react";
 import { guruService } from "../../services/guruService";
 import { muridService } from "../../services/muridService";
 import { waliController } from "../../controller/waliController";
