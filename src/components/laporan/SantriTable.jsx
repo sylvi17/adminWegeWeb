@@ -16,7 +16,7 @@ const TABLE_HEADERS = [
   "Aksi",
 ];
 
-export default function SantriTable({ siswaList }) {
+export default function SantriTable({ siswaList, onRefresh }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [editMurid, setEditMurid] = useState(null);
@@ -86,7 +86,10 @@ export default function SantriTable({ siswaList }) {
         <ModalEditMurid
           murid={editMurid}
           onClose={() => setEditMurid(null)}
-          onSuccess={() => setEditMurid(null)}
+          onSuccess={() => {
+            setEditMurid(null);
+            onRefresh?.(); // ← auto refresh setelah edit
+          }}
         />
       )}
 
@@ -94,7 +97,10 @@ export default function SantriTable({ siswaList }) {
         <ModalDeleteMurid
           murid={deleteMurid}
           onClose={() => setDeleteMurid(null)}
-          onSuccess={() => setDeleteMurid(null)}
+          onSuccess={() => {
+            setDeleteMurid(null);
+            onRefresh?.(); // ← auto refresh setelah delete
+          }}
         />
       )}
     </div>

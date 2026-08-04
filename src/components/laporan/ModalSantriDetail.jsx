@@ -1,5 +1,10 @@
 import StatusBadge from "./Badge";
 
+function formatJilid(jilid) {
+  if (!jilid || jilid === "-") return "-";
+  return jilid.replace(/_/g, " ");
+}
+
 export default function ModalSantriDetail({ santri, history, onClose }) {
   if (!santri) return null;
 
@@ -15,12 +20,8 @@ export default function ModalSantriDetail({ santri, history, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#f5f5f5]">
           <div>
-            <h2 className="text-lg font-extrabold text-[#1a1a1a]">
-              {santri.nama}
-            </h2>
-            <p className="text-xs text-[#aaa] mt-0.5">
-              Riwayat ngaji terakhir
-            </p>
+            <h2 className="text-lg font-extrabold text-[#1a1a1a]">{santri.nama}</h2>
+            <p className="text-xs text-[#aaa] mt-0.5">Riwayat ngaji terakhir</p>
           </div>
           <button
             onClick={onClose}
@@ -40,25 +41,17 @@ export default function ModalSantriDetail({ santri, history, onClose }) {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-[#fafafa] sticky top-0">
-                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">
-                    JILID
-                  </th>
-                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">
-                    HALAMAN
-                  </th>
-                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">
-                    STATUS
-                  </th>
-                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">
-                    TANGGAL
-                  </th>
+                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">JILID</th>
+                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">HALAMAN</th>
+                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">STATUS</th>
+                  <th className="px-6 py-3 text-left text-[0.7rem] font-extrabold text-[#bbb] tracking-[0.8px]">TANGGAL</th>
                 </tr>
               </thead>
               <tbody>
                 {history.map((h) => (
                   <tr key={h.id} className="hover:bg-[#fafafa]">
                     <td className="px-6 py-3 border-b border-[#f5f5f5] text-[0.85rem] text-[#444]">
-                      {h.jilid}
+                      {formatJilid(h.jilid)}
                     </td>
                     <td className="px-6 py-3 border-b border-[#f5f5f5] text-[0.85rem] text-[#444]">
                       {h.halaman}

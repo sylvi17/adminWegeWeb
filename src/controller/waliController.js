@@ -1,5 +1,11 @@
 import { waliService } from "../services/waliService";
 
+// helper untuk format jilid
+function formatJilid(jilidSekarang) {
+  if (!jilidSekarang) return "Belum Ada Jilid";
+  return String(jilidSekarang).replace(/_/g, " ");
+}
+
 export const waliController = {
   getAll: async () => {
     const res = await waliService.getAll();
@@ -17,7 +23,7 @@ export const waliController = {
           id: m.id,
           nama: m.nama,
           jenisKelamin: m.jenisKelamin,
-          jilid: m.jilidSekarang ?? "-",
+          jilid: formatJilid(m.jilidSekarang),
         })) ?? [],
     }));
   },

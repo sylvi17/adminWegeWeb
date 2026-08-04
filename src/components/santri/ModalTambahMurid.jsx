@@ -79,8 +79,8 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
       let waliId = Number(selectedWaliId);
 
       if (waliMode === "new") {
-        const res = await waliController.tambahWali(newWali);
-        waliId = res.data?.wali?.id ?? res.data?.id;
+        const res = await waliController.create(newWali);
+        waliId = res?.id ?? res?.wali?.id;
         if (!waliId) throw new Error("Gagal mendapatkan ID wali baru.");
       }
 

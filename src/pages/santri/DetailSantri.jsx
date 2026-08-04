@@ -58,7 +58,8 @@ export default function DetailSantri() {
           </h1>
         </header>
 
-        <SantriTable siswaList={muridList} />
+        {/* ← tambah onRefresh */}
+        <SantriTable siswaList={muridList} onRefresh={refetch} />
       </main>
 
       {showModal && (
