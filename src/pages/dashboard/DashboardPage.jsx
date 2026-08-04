@@ -5,32 +5,6 @@ import PengajarActivityLog from "../../components/pengajar/PengajarActivityLog";
 import useActivityLogs from "../../hooks/useActivityLogs";
 import { Users2, Check, Star } from "lucide-react";
 
-const STATS = [
-  {
-    icon: Users2,
-    label: "Total Santri",
-    value: "250",
-    suffix: "",
-    bg: "bg-white",
-    dark: false,
-  },
-  {
-    icon: Check,
-    label: "Santri Aktif",
-    value: "150",
-    suffix: "",
-    bg: "bg-white",
-    dark: false,
-  },
-  {
-    icon: Star,
-    label: "Rata-rata Kelancaran",
-    value: "85.5",
-    suffix: "/100",
-    bg: "bg-[#f0e2cc]",
-    dark: false,
-  },
-];
 
 export default function DashboardPage() {
   const {
