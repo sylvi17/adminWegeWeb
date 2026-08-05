@@ -55,13 +55,13 @@ export default function SantriRow({ siswa, onEdit, onDelete }) {
                 onClick={() => { setOpen(false); onEdit(); }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
               >
-                ✏️ Edit
+                 Edit
               </button>
               <button
                 onClick={() => { setOpen(false); onDelete(); }}
                 className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
               >
-                🗑️ Hapus
+                 Arsipkan
               </button>
             </div>
           )}

@@ -12,7 +12,7 @@ export default function ModalDeleteMurid({ murid, onClose, onSuccess }) {
       await apiClient.delete(`/murid/${murid.id}`);
       onSuccess();
     } catch (err) {
-      setError(err.message ?? "Gagal menghapus murid.");
+      setError(err.message ?? "Gagal mengarsipkan murid.");
     } finally {
       setLoading(false);
     }
@@ -25,9 +25,9 @@ export default function ModalDeleteMurid({ murid, onClose, onSuccess }) {
           <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4 text-2xl">
             🗑️
           </div>
-          <h2 className="text-base font-extrabold text-gray-900 mb-2">Hapus Murid</h2>
+          <h2 className="text-base font-extrabold text-gray-900 mb-2">Arsipkan Murid</h2>
           <p className="text-sm text-gray-400">
-            Apakah kamu yakin ingin menghapus{" "}
+            Apakah kamu yakin ingin mengarsipkan{" "}
             <span className="font-bold text-gray-700">{murid.nama}</span>?
             Tindakan ini tidak bisa dibatalkan.
           </p>
@@ -50,7 +50,7 @@ export default function ModalDeleteMurid({ murid, onClose, onSuccess }) {
             disabled={loading}
             className="text-sm px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 active:scale-95 text-white font-bold shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Menghapus..." : "Ya, Hapus"}
+            {loading ? "Mengarsipkan..." : "Ya, Arsipkan"}
           </button>
         </div>
       </div>

@@ -12,6 +12,7 @@ export default function DetailSantri() {
   const [showModal, setShowModal] = useState(false);
   const { state } = useLocation();
   const namaGuru = state?.namaGuru ?? "-";
+  
 
   if (loading) {
     return (

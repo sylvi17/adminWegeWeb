@@ -11,52 +11,70 @@ export const muridController = {
   getAll: async () => {
     const res = await muridService.getAll();
     return res.data.map((m) => ({
-      id:           m.id,
-      nama:         m.nama,
-      umur:         m.umur,
+      id: m.id,
+      nama: m.nama,
+      umur: m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid:        formatJilid(m.jilidSekarang),
-      guru:         m.guru?.nama ?? "-",
-      wali:         m.waliMurid?.nama ?? "-",
+      jilid: formatJilid(m.jilidSekarang),
+      guru: m.guru,
+      guruId: m.guru?.id ?? null,
+      wali: m.waliMurid?.nama ?? "-",
     }));
+  },
+  getArchived: async () => {
+    const res = await muridService.getArchived();
+
+    return res.data.map((m) => ({
+      id: m.id,
+      nama: m.nama,
+      umur: m.umur,
+      jenisKelamin: m.jenisKelamin,
+      jilid: formatJilid(m.jilidSekarang),
+      guru: m.guru?.nama ?? "-",
+      wali: m.waliMurid?.nama ?? "-",
+    }));
+  },
+
+  restore: async (id) => {
+    return await muridService.restore(id);
   },
 
   getById: async (id) => {
     const res = await muridService.getById(id);
     const m = res.data;
     return {
-      id:           m.id,
-      nama:         m.nama,
-      umur:         m.umur,
+      id: m.id,
+      nama: m.nama,
+      umur: m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid:        formatJilid(m.jilidSekarang),
-      guru:         m.guru?.nama ?? "-",
-      guruNoHp:     m.guru?.no_hp ?? "-",
-      wali:         m.waliMurid?.nama ?? "-",
-      waliPeran:    m.waliMurid?.peran ?? "-",
+      jilid: formatJilid(m.jilidSekarang),
+      guru: m.guru?.nama ?? "-",
+      guruNoHp: m.guru?.no_hp ?? "-",
+      wali: m.waliMurid?.nama ?? "-",
+      waliPeran: m.waliMurid?.peran ?? "-",
     };
   },
 
   getByGuru: async (guruId) => {
     const res = await muridService.getByGuru(guruId);
     return res.data.map((m) => ({
-      id:           m.id,
-      nama:         m.nama,
-      umur:         m.umur,
+      id: m.id,
+      nama: m.nama,
+      umur: m.umur,
       jenisKelamin: m.jenisKelamin,
-      jilid:        formatJilid(m.jilidSekarang),
-      wali:         m.waliMurid?.nama ?? "-",
-       guru:         m.guru?.nama ?? "-",
+      jilid: formatJilid(m.jilidSekarang),
+      wali: m.waliMurid?.nama ?? "-",
+      guru: m.guru?.nama ?? "-",
     }));
   },
 
   tambahMurid: async (formData) => {
     const payload = {
-      nama:         formData.nama,
-      umur:         Number(formData.umur) || 0,
+      nama: formData.nama,
+      umur: Number(formData.umur) || 0,
       jenisKelamin: formData.jenisKelamin,
-      guruId:       Number(formData.guruId),
-      WaliId:       Number(formData.WaliId),
+      guruId: Number(formData.guruId),
+      WaliId: Number(formData.WaliId),
     };
 
     if (formData.jilidSekarang) {
@@ -68,10 +86,11 @@ export const muridController = {
 
   updateMurid: async (id, formData) => {
     const payload = {
-      nama:         formData.nama,
-      umur:         Number(formData.umur) || 0,
+      nama: formData.nama,
+      umur: Number(formData.umur) || 0,
       jenisKelamin: formData.jenisKelamin,
       jilidSekarang: formData.jilidSekarang || null,
+      guruId: formData.guruId ? Number(formData.guruId) : null,
     };
 
     return await apiClient.put(`/murid/${id}`, payload);

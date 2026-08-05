@@ -16,14 +16,18 @@ const TABLE_HEADERS = [
   "Aksi",
 ];
 
-export default function SantriTable({ siswaList, onRefresh }) {
+export default function SantriTable({
+  siswaList,
+  onRefresh,
+  archiveMode = false,
+}) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [editMurid, setEditMurid] = useState(null);
   const [deleteMurid, setDeleteMurid] = useState(null);
 
   const filtered = siswaList.filter((s) =>
-    s.nama.toLowerCase().includes(search.toLowerCase())
+    s.nama.toLowerCase().includes(search.toLowerCase()),
   );
 
   const totalPage = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
@@ -37,7 +41,10 @@ export default function SantriTable({ siswaList, onRefresh }) {
           type="search"
           placeholder="Cari nama santri..."
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="bg-transparent outline-none text-sm text-gray-600 placeholder:text-gray-400 w-full font-nunito"
         />
       </label>
@@ -47,7 +54,10 @@ export default function SantriTable({ siswaList, onRefresh }) {
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
               {TABLE_HEADERS.map((h) => (
-                <th key={h} className="px-5 py-4 text-left text-xs font-extrabold text-gray-300 tracking-widest uppercase">
+                <th
+                  key={h}
+                  className="px-5 py-4 text-left text-xs font-extrabold text-gray-300 tracking-widest uppercase"
+                >
                   {h}
                 </th>
               ))}
@@ -65,7 +75,10 @@ export default function SantriTable({ siswaList, onRefresh }) {
               ))
             ) : (
               <tr>
-                <td colSpan={TABLE_HEADERS.length} className="py-16 text-center text-sm text-gray-400">
+                <td
+                  colSpan={TABLE_HEADERS.length}
+                  className="py-16 text-center text-sm text-gray-400"
+                >
                   Tidak ada santri yang ditemukan.
                 </td>
               </tr>
