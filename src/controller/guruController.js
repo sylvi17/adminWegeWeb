@@ -17,12 +17,13 @@ export const guruController = {
   },
 
   create: async (formData) => {
-    console.log("DIKIRIM KE API:", formData);
+    const { row, ...payload } = formData;
     const res = await guruService.create({
-      ...formData,
+      ...payload,
       role: "GURU",
-      no_hp: formData.no_hp ? Number(formData.no_hp) : null,
+      no_hp: payload.no_hp ? Number(payload.no_hp) : null,
     });
+
     return res.data;
   },
 

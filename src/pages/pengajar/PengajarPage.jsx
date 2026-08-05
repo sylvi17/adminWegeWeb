@@ -44,23 +44,14 @@ export default function PengajarPage() {
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-    const mappedData = jsonData.map((item) => ({
+    const mappedData = jsonData.map((item, index) => ({
+      row: index + 2,
       nama: String(item.nama ?? "").trim(),
       email: String(item.email ?? "").trim(),
       password: String(item.password ?? ""),
       no_hp: String(item.no_hp ?? "").trim(),
       alamat: String(item.alamat ?? "").trim(),
     }));
-
-    const invalidData = mappedData.filter(
-      (item) => !item.nama || !item.email || !item.password,
-    );
-
-    if (invalidData.length > 0) {
-      alert("Masih ada data yang belum lengkap");
-      return;
-    }
-
     setPreviewData(mappedData);
     setShowPreview(true);
 
@@ -79,20 +70,53 @@ export default function PengajarPage() {
     aktif: pengajarList.length,
     izin: 0,
   };
+  const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [importResult, setImportResult] = useState(null);
   const handleImportExcel = () => {
     fileInputRef.current?.click();
   };
   const [previewData, setPreviewData] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
   const handleImportData = async () => {
-    const result = await guruController.createMany(previewData);
+    setImporting(true);
+    setProgress(0);
+    const results = [];
+    for (let i = 0; i < previewData.length; i++) {
+      const item = previewData[i];
 
-    console.table(result);
+      if (!item.nama || !item.email || !item.password) {
+        results.push({
+          success: false,
+          data: item,
+          error: "Data belum lengkap",
+        });
 
+        setProgress(Math.round(((i + 1) / previewData.length) * 100));
+        continue;
+      }
+
+      try {
+        const result = await guruController.create(item);
+
+        results.push({
+          success: true,
+          data: result,
+        });
+      } catch (err) {
+        results.push({
+          success: false,
+          data: item,
+          error: err.response?.data?.message ?? err.message ?? "Gagal import",
+        });
+      }
+
+      setProgress(Math.round(((i + 1) / previewData.length) * 100));
+    }
     await refetch();
 
-    setShowPreview(false);
-    setPreviewData([]);
+    setImportResult(results);
+    setImporting(false);
   };
 
   return (
@@ -161,9 +185,17 @@ export default function PengajarPage() {
       {showPreview && (
         <ModalPreviewImportGuru
           data={previewData}
-          onClose={() => setShowPreview(false)}
+          onClose={() => {
+            setShowPreview(false);
+            setPreviewData([]);
+            setImportResult(null);
+            setProgress(0);
+          }}
           onImport={handleImportData}
           existingEmails={pengajarList.map((w) => w.email.toLowerCase())}
+          importing={importing}
+          progress={progress}
+          importResult={importResult}
         />
       )}
     </div>

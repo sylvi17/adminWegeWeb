@@ -90,9 +90,9 @@ export default function LaporanPage() {
           title="Laporan Progress Santri"
           subtitle="Berikut adalah ringkasan perkembangan hafalan dan mingguan"
         >
-          <button className="rounded-full bg-[#1a5c54] text-white px-5 py-2 font-bold text-sm">
+          {/* <button className="rounded-full bg-[#1a5c54] text-white px-5 py-2 font-bold text-sm">
             ⬇ Unduh Rekap PDF
-          </button>
+          </button> */}
         </PageHeader>
 
         <div className="bg-white rounded-[18px] shadow-sm overflow-hidden">
