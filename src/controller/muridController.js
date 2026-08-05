@@ -21,6 +21,23 @@ export const muridController = {
       wali: m.waliMurid?.nama ?? "-",
     }));
   },
+  getArchived: async () => {
+    const res = await muridService.getArchived();
+
+    return res.data.map((m) => ({
+      id: m.id,
+      nama: m.nama,
+      umur: m.umur,
+      jenisKelamin: m.jenisKelamin,
+      jilid: formatJilid(m.jilidSekarang),
+      guru: m.guru?.nama ?? "-",
+      wali: m.waliMurid?.nama ?? "-",
+    }));
+  },
+
+  restore: async (id) => {
+    return await muridService.restore(id);
+  },
 
   getById: async (id) => {
     const res = await muridService.getById(id);

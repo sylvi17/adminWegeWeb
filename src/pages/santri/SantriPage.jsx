@@ -4,12 +4,14 @@ import KelasCard from "../../components/ui/KelasCard";
 import { useMurid } from "../../hooks/useMurid";
 import { useGuruList } from "../../hooks/useGuruList";
 import { SearchIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 /** @typedef {{ id: number; nama: string; pengajar: string; jadwal: string; siswa: number; maks: number }} KelasItem */
 
 /** @type {KelasItem[]} */
 
 export default function SantriPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const { data: guruList, loading, error } = useGuruList();
 
@@ -64,6 +66,16 @@ export default function SantriPage() {
               {filtered.map((g) => (
                 <KelasCard key={g.id} guru={g} />
               ))}
+              <div
+                onClick={() => navigate("/santri/arsip")}
+                className="cursor-pointer rounded-3xl bg-white shadow-md p-6 hover:shadow-lg transition"
+              >
+                <h2 className="text-xl font-bold"> Arsip Murid</h2>
+
+                <p className="text-gray-500 mt-2">
+                  Lihat murid yang diarsipkan
+                </p>
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center py-24 text-gray-400 text-base">
