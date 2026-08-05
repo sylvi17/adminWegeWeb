@@ -1,3 +1,5 @@
+import { Trash2, RotateCcw } from "lucide-react";
+
 export default function ModalArchiveMurid({
   type = "archive",
   murid,
@@ -10,40 +12,52 @@ export default function ModalArchiveMurid({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-xl">
+        <div className="px-6 pt-8 pb-6 text-center">
+          {/* Icon lingkaran */}
+          <div
+            className={[
+              "w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center",
+              isRestore ? "bg-emerald-100" : "bg-red-100",
+            ].join(" ")}
+          >
+            {isRestore ? (
+              <RotateCcw className="w-7 h-7 text-emerald-500" />
+            ) : (
+              <Trash2 className="w-7 h-7 text-red-400" />
+            )}
+          </div>
 
-        <div className="px-6 py-5 border-b">
-          <h2 className="text-lg font-extrabold text-gray-800">
+          {/* Judul */}
+          <h2 className="text-lg font-extrabold text-gray-900 mb-2">
             {isRestore ? "Pulihkan Murid" : "Arsipkan Murid"}
           </h2>
-        </div>
 
-        <div className="px-6 py-6">
-          <p className="text-sm text-gray-600 leading-relaxed">
+          {/* Deskripsi */}
+          <p className="text-sm text-gray-500 leading-relaxed">
             {isRestore ? (
               <>
-                Apakah Anda yakin ingin <b>memulihkan</b> murid
-                <span className="font-bold"> {murid.nama}</span>?
+                Apakah kamu yakin ingin memulihkan{" "}
+                <span className="font-bold text-gray-700">{murid.nama}</span>?
+                <br />
+                Murid akan kembali muncul pada daftar santri aktif.
               </>
             ) : (
               <>
-                Apakah Anda yakin ingin <b>mengarsipkan</b> murid
-                <span className="font-bold"> {murid.nama}</span>?
-
+                Apakah kamu yakin ingin mengarsipkan{" "}
+                <span className="font-bold text-gray-700">{murid.nama}</span>?
                 <br />
-                <br />
-
-                Murid tidak akan tampil pada daftar santri, namun seluruh data
-                masih tersimpan dan dapat dipulihkan kembali.
+                Tindakan ini tidak bisa dibatalkan.
               </>
             )}
           </p>
         </div>
 
-        <div className="flex justify-end gap-3 px-6 py-4 border-t">
-
+        {/* Tombol */}
+        <div className="flex justify-center gap-3 px-6 pb-6">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-full border border-gray-300 text-gray-600 font-bold hover:bg-gray-100"
+            disabled={loading}
+            className="px-6 py-2 rounded-full border border-gray-300 text-gray-600 font-bold hover:bg-gray-100 transition disabled:opacity-50"
           >
             Batal
           </button>
@@ -51,21 +65,19 @@ export default function ModalArchiveMurid({
           <button
             disabled={loading}
             onClick={onConfirm}
-            className={`px-5 py-2 rounded-full text-white font-bold transition
-              ${
-                isRestore
-                  ? "bg-emerald-500 hover:bg-emerald-600"
-                  : "bg-red-500 hover:bg-red-600"
-              }
-            `}
+            className={[
+              "px-6 py-2 rounded-full text-white font-bold transition disabled:opacity-50",
+              isRestore
+                ? "bg-emerald-500 hover:bg-emerald-600"
+                : "bg-red-500 hover:bg-red-600",
+            ].join(" ")}
           >
             {loading
               ? "Memproses..."
               : isRestore
-              ? "Pulihkan"
-              : "Arsipkan"}
+              ? "Ya, Pulihkan"
+              : "Ya, Arsipkan"}
           </button>
-
         </div>
       </div>
     </div>

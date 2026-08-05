@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import apiClient from "../services/api";
+import { waliController } from "../controller/waliController";
 
 function formatJilid(jilidSekarang) {
   if (!jilidSekarang) return "Belum Ada Jilid";
@@ -17,37 +18,48 @@ export function useMuridByWali(waliId) {
     setLoading(true);
     setError("");
 
-    apiClient.get(`/murid/wali/${waliId}`)
-      .then((res) => {
-        const data = res.data ?? [];
-
-        const waliInfo = data[0]?.waliMurid ?? null;
-        setWali(waliInfo ? {
-          id:    waliInfo.id,
-          nama:  waliInfo.nama,
-          umur:  waliInfo.umur,
-          peran: waliInfo.peran,
-          tanggal_lahir: waliInfo.tanggal_lahir ?? null,
-          email: waliInfo.user?.email ?? "-",
-        } : null);
-
-        setMuridList(data.map((m) => ({
-          id:           m.id,
-          nama:         m.nama,
-          umur:         m.umur,
-          jenisKelamin: m.jenisKelamin,
-          jilid:        formatJilid(m.jilidSekarang),
-          guru:         m.guru?.user?.nama ?? m.guru?.nama ?? "-",
-          wali:         m.waliMurid?.nama ?? "-",
-        })));
-      })
-      .catch((err) => {
-        // kalau 404 = tidak ada murid, bukan error fatal
-        if (err.status === 404 || err.message?.includes("404") || err.message?.includes("tidak ditemukan")) {
-          setMuridList([]);
-          setError("");
+    Promise.allSettled([
+      waliController.getAll(), // untuk data wali (nama, umur, peran) — selalu ada walau anak 0
+      apiClient.get(`/murid/wali/${waliId}`), // untuk daftar anak
+    ])
+      .then(([waliResult, muridResult]) => {
+        // --- Data wali ---
+        if (waliResult.status === "fulfilled") {
+          const waliList = waliResult.value ?? [];
+          const found =
+            waliList.find((w) => String(w.id) === String(waliId)) ?? null;
+          setWali(found);
         } else {
-          setError(err.message);
+          setWali(null);
+        }
+
+        // --- Data murid (untuk tabel) ---
+        if (muridResult.status === "fulfilled") {
+          const data = muridResult.value.data ?? [];
+
+          setMuridList(
+            data.map((m) => ({
+              id: m.id,
+              nama: m.nama,
+              umur: m.umur,
+              jenisKelamin: m.jenisKelamin,
+              jilid: formatJilid(m.jilidSekarang),
+              guru: m.guru?.user?.nama ?? m.guru?.nama ?? "-",
+              wali: m.waliMurid?.nama ?? "-",
+            }))
+          );
+        } else {
+          const err = muridResult.reason;
+          // kalau 404 = tidak ada murid, bukan error fatal
+          if (
+            err?.status === 404 ||
+            err?.message?.includes("404") ||
+            err?.message?.includes("tidak ditemukan")
+          ) {
+            setMuridList([]);
+          } else {
+            setError(err?.message ?? "Gagal memuat data murid");
+          }
         }
       })
       .finally(() => setLoading(false));

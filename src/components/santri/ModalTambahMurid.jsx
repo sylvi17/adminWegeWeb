@@ -4,6 +4,10 @@ import { muridController } from "../../controller/muridController";
 
 const JILID_OPTIONS = ["JILID_1", "JILID_2", "JILID_3", "JILID_4", "JILID_5", "JILID_6"];
 const PERAN_OPTIONS = ["ayah", "ibu", "kakek", "nenek", "wali"];
+const NAMA_BULAN = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+];
 
 const INITIAL_MURID = {
   nama: "", tanggal_lahir: "", jenisKelamin: "LAKI_LAKI", jilidAwal: "",
@@ -23,6 +27,89 @@ function hitungUmur(tanggal_lahir) {
     (sekarang.getMonth() === lahir.getMonth() && sekarang.getDate() < lahir.getDate());
   if (belumUlangTahun) umur--;
   return umur;
+}
+
+function parseTanggal(value) {
+  if (!value) return { tanggal: null, bulan: null, tahun: null };
+  const [y, m, d] = String(value).slice(0, 10).split("-").map(Number);
+  return { tanggal: d || null, bulan: m || null, tahun: y || null };
+}
+
+function jumlahHari(bulan, tahun) {
+  if (!bulan) return 31;
+  return new Date(tahun || 2000, bulan, 0).getDate();
+}
+
+function pad(n) {
+  return String(n).padStart(2, "0");
+}
+
+function DatePickerIndo({ value, onChange }) {
+  const initial = parseTanggal(value);
+  const [tanggal, setTanggal] = useState(initial.tanggal);
+  const [bulan, setBulan] = useState(initial.bulan);
+  const [tahun, setTahun] = useState(initial.tahun);
+
+  const tahunSekarang = new Date().getFullYear();
+  const listTahun = [];
+  for (let y = tahunSekarang; y >= tahunSekarang - 80; y--) listTahun.push(y);
+  const listTanggal = Array.from({ length: jumlahHari(bulan, tahun) }, (_, i) => i + 1);
+
+  function update(d, m, y) {
+    setTanggal(d);
+    setBulan(m);
+    setTahun(y);
+    if (d && m && y) {
+      onChange(`${y}-${pad(m)}-${pad(d)}`);
+    }
+  }
+
+  function handleTanggalSelect(e) {
+    const d = Number(e.target.value) || null;
+    update(d, bulan, tahun);
+  }
+
+  function handleBulanSelect(e) {
+    const m = Number(e.target.value) || null;
+    const maxHari = jumlahHari(m, tahun);
+    const d = tanggal && tanggal > maxHari ? maxHari : tanggal;
+    update(d, m, tahun);
+  }
+
+  function handleTahunSelect(e) {
+    const y = Number(e.target.value) || null;
+    const maxHari = jumlahHari(bulan, y);
+    const d = tanggal && tanggal > maxHari ? maxHari : tanggal;
+    update(d, bulan, y);
+  }
+
+  const selectClass =
+    "w-full border border-gray-200 rounded-lg px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700";
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      <select value={tanggal ?? ""} onChange={handleTanggalSelect} className={selectClass}>
+        <option value="">Tanggal</option>
+        {listTanggal.map((d) => (
+          <option key={d} value={d}>{d}</option>
+        ))}
+      </select>
+
+      <select value={bulan ?? ""} onChange={handleBulanSelect} className={selectClass}>
+        <option value="">Bulan</option>
+        {NAMA_BULAN.map((nama, idx) => (
+          <option key={nama} value={idx + 1}>{nama}</option>
+        ))}
+      </select>
+
+      <select value={tahun ?? ""} onChange={handleTahunSelect} className={selectClass}>
+        <option value="">Tahun</option>
+        {listTahun.map((y) => (
+          <option key={y} value={y}>{y}</option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess }) {
@@ -86,6 +173,9 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
 
       const umur = hitungUmur(murid.tanggal_lahir);
 
+      // Relasi murid-wali TIDAK diubah: WaliId tetap dikirim persis
+      // seperti sebelumnya, supaya murid baru tetap muncul di bawah
+      // wali yang dipilih (existing) atau wali yang baru dibuat.
       await muridController.tambahMurid({
         nama:          murid.nama.trim(),
         umur:          umur ?? 0,
@@ -147,11 +237,9 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
 
               <div>
                 <label className="text-xs text-gray-400 font-semibold mb-1 block">Tanggal Lahir</label>
-                <input
-                  type="date"
+                <DatePickerIndo
                   value={murid.tanggal_lahir}
-                  onChange={(e) => handleMuridChange("tanggal_lahir", e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
+                  onChange={(val) => handleMuridChange("tanggal_lahir", val)}
                 />
                 {murid.tanggal_lahir && (
                   <p className="text-xs text-gray-400 mt-1">{hitungUmur(murid.tanggal_lahir)} tahun</p>
@@ -277,11 +365,9 @@ export default function ModalTambahMurid({ guruId, namaGuru, onClose, onSuccess 
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-semibold mb-1 block">Tanggal Lahir</label>
-                  <input
-                    type="date"
+                  <DatePickerIndo
                     value={newWali.tanggal_lahir}
-                    onChange={(e) => handleNewWaliChange("tanggal_lahir", e.target.value)}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-700"
+                    onChange={(val) => handleNewWaliChange("tanggal_lahir", val)}
                   />
                   {newWali.tanggal_lahir && (
                     <p className="text-xs text-gray-400 mt-1">{hitungUmur(newWali.tanggal_lahir)} tahun</p>
