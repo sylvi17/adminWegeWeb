@@ -6,6 +6,7 @@ import { Users2, Check, Star } from "lucide-react";
 import { guruService } from "../../services/guruService";
 import { muridService } from "../../services/muridService";
 import { waliController } from "../../controller/waliController";
+import { nilaiController } from "../../controller/nilaiController";
 
 export default function DashboardPage() {
   const { activities } = useActivityLogs();
@@ -14,6 +15,7 @@ export default function DashboardPage() {
     jumlahGuru: "-",
     jumlahWali: "-",
     jumlahMurid: "-",
+    jumlahLaporanBulanIni: "-",
   });
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -21,10 +23,11 @@ export default function DashboardPage() {
     async function fetchStats() {
       setLoadingStats(true);
       try {
-        const [guruRes, waliList, muridRes] = await Promise.all([
+        const [guruRes, waliList, muridRes, laporanRes] = await Promise.all([
           guruService.getAll(),
           waliController.getAll(),
           muridService.getAll(),
+          nilaiController.getAll(),
         ]);
 
         // hanya murid yang punya guru (aktif)
@@ -32,10 +35,24 @@ export default function DashboardPage() {
           (m) => m.guruId !== null
         ).length;
 
+        // filter laporan yang dibuat di bulan & tahun berjalan
+        const now = new Date();
+        const laporanList = laporanRes?.data ?? laporanRes ?? [];
+
+        const jumlahLaporanBulanIni = laporanList.filter((item) => {
+          // ganti "createdAt" kalau nama field tanggal di API-mu berbeda
+          const tanggal = new Date(item.createdAt);
+          return (
+            tanggal.getMonth() === now.getMonth() &&
+            tanggal.getFullYear() === now.getFullYear()
+          );
+        }).length;
+
         setStats({
           jumlahGuru: guruRes.data?.length ?? 0,
           jumlahWali: waliList.length ?? 0,
           jumlahMurid,
+          jumlahLaporanBulanIni,
         });
       } catch (err) {
         console.error("Gagal fetch stats dashboard:", err);
@@ -55,7 +72,7 @@ export default function DashboardPage() {
     },
     {
       label: "Jumlah Laporan Bulan Ini",
-      value: 13,
+      value: loadingStats ? "..." : stats.jumlahLaporanBulanIni,
       gradient: "linear-gradient(135deg, #2e7d32 0%, #43a047 100%)",
     },
     {

@@ -31,6 +31,10 @@ export const muridController = {
       jenisKelamin: m.jenisKelamin,
       jilid: formatJilid(m.jilidSekarang),
       guru: m.guru?.nama ?? "-",
+      // Tetap sertakan guruId walau tampilan (guru) di halaman arsip cuma
+      // nama, supaya kalau nanti dibuka lewat modal edit, dropdown Guru
+      // tidak ikut kosong seperti bug yang terjadi di getByGuru.
+      guruId: m.guru?.id ?? null,
       wali: m.waliMurid?.nama ?? "-",
     }));
   },
@@ -49,6 +53,7 @@ export const muridController = {
       jenisKelamin: m.jenisKelamin,
       jilid: formatJilid(m.jilidSekarang),
       guru: m.guru?.nama ?? "-",
+      guruId: m.guru?.id ?? null,
       guruNoHp: m.guru?.no_hp ?? "-",
       wali: m.waliMurid?.nama ?? "-",
       waliPeran: m.waliMurid?.peran ?? "-",
@@ -65,6 +70,11 @@ export const muridController = {
       jilid: formatJilid(m.jilidSekarang),
       wali: m.waliMurid?.nama ?? "-",
       guru: m.guru?.nama ?? "-",
+      // FIX: sebelumnya guruId tidak pernah dikirim dari fungsi ini.
+      // Karena endpoint ini sudah difilter berdasarkan guruId tertentu,
+      // setiap murid yang dikembalikan pasti milik guru itu. Fallback ke
+      // parameter guruId kalau m.guru?.id kebetulan tidak ada di response.
+      guruId: m.guru?.id ?? Number(guruId) ?? null,
     }));
   },
 
@@ -90,8 +100,19 @@ export const muridController = {
       umur: Number(formData.umur) || 0,
       jenisKelamin: formData.jenisKelamin,
       jilidSekarang: formData.jilidSekarang || null,
-      guruId: formData.guruId ? Number(formData.guruId) : null,
     };
+
+    // FIX: dulu ini SELALU mengirim `guruId`, dan kalau formData.guruId
+    // kosong/tidak valid (misal karena dibuka dari halaman yang tidak
+    // menyertakan guruId), field ini dikirim sebagai `null` — sehingga
+    // relasi guru yang sudah ada ikut TERHAPUS di backend saat disimpan.
+    // Sekarang: guruId hanya disertakan ke payload kalau nilainya valid,
+    // supaya relasi guru yang sudah ada tidak pernah tertimpa null secara
+    // tidak sengaja.
+    const guruIdNum = Number(formData.guruId);
+    if (formData.guruId && !Number.isNaN(guruIdNum)) {
+      payload.guruId = guruIdNum;
+    }
 
     return await apiClient.put(`/murid/${id}`, payload);
   },
