@@ -14,7 +14,6 @@ async function request(method, endpoint, { body, headers = {} } = {}) {
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method,
-    // src/lib/apiClient.js — tambahkan di bagian headers
     headers: {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true", // ← tambahkan ini
