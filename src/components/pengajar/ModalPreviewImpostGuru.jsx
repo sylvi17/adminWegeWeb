@@ -3,6 +3,9 @@ export default function ModalPreviewImportGuru({
   existingEmails,
   onClose,
   onImport,
+  importing,
+  progress,
+  importResult,
 }) {
   const emailSet = new Set();
   const validatedData = data.map((item) => {
@@ -96,7 +99,9 @@ export default function ModalPreviewImportGuru({
 
                   <td className="border p-2">{item.email || "-"}</td>
 
-                  <td className="border p-2">{"•".repeat(String(item.password).length)}</td>
+                  <td className="border p-2">
+                    {"•".repeat(String(item.password).length)}
+                  </td>
 
                   <td className="border p-2">{item.no_hp}</td>
 
@@ -139,9 +144,38 @@ export default function ModalPreviewImportGuru({
           >
             Batal
           </button>
+          {importing && (
+            <div className="mb-5">
+              <div className="flex justify-between text-sm mb-2">
+                <span>Mengimpor data...</span>
+                <span>{progress}%</span>
+              </div>
 
+              <div className="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
+                <div
+                  className="h-full bg-teal-500 transition-all duration-300"
+                  style={{
+                    width: `${progress}%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          {importResult && (
+            <div className="rounded-xl bg-gray-50 p-4 space-y-2">
+              <div className="font-bold">Hasil Import</div>
+
+              <div className="text-green-600">
+                Berhasil :{importResult.filter((r) => r.success).length}
+              </div>
+
+              <div className="text-red-500">
+                Gagal :{importResult.filter((r) => !r.success).length}
+              </div>
+            </div>
+          )}
           <button
-            disabled={invalid > 0}
+            disabled={importing}
             onClick={onImport}
             className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
               invalid > 0
@@ -149,7 +183,7 @@ export default function ModalPreviewImportGuru({
                 : "bg-teal-500 hover:bg-teal-600"
             }`}
           >
-            Import ({valid})
+            {importing ? "Mengimpor..." : "Import"}
           </button>
         </div>
       </div>

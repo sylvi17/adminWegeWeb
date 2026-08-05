@@ -29,9 +29,12 @@ export const waliController = {
   },
 
   create: async (formData) => {
+    const { row, valid, errors, ...payload } = formData;
+
     const res = await waliService.create({
-      ...formData,
+      ...payload,
       role: "WALI",
+      no_hp: payload.no_hp ? Number(payload.no_hp) : null,
     });
 
     return res.data;
