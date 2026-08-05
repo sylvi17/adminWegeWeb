@@ -15,7 +15,7 @@ function hitungUmur(tanggal_lahir) {
 export default function DetailWali() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { wali, muridList, loading, error } = useMuridByWali(id);
+  const { wali, muridList, loading, error, refetch } = useMuridByWali(id);
   const [showModal, setShowModal] = useState(false);
 
   if (loading) {
@@ -26,19 +26,23 @@ export default function DetailWali() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen text-red-400">
-        {error}
-      </div>
-    );
-  }
+  const isEmpty = error || muridList.length === 0;
 
   return (
     <div className="flex min-h-screen bg-gray-100 font-nunito">
       <Sidebar />
 
       <main className="ml-60 flex-1 min-w-0 px-8 py-6 flex flex-col gap-6">
+        {/* Tombol tambah */}
+        <div className="flex items-center justify-end">
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-teal-500 hover:bg-teal-600 active:scale-95 text-white text-sm font-bold px-6 py-2.5 rounded-full shadow-md shadow-teal-200 transition-all whitespace-nowrap"
+          >
+            + Tambah Anak
+          </button>
+        </div>
+
         <header className="flex flex-col gap-1">
           <button
             onClick={() => navigate("/wali-murid")}
@@ -57,7 +61,19 @@ export default function DetailWali() {
           </p>
         </header>
 
-        <SantriTable siswaList={muridList} />
+        {/* Empty state — hanya pesan, tanpa tombol */}
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center bg-white rounded-2xl shadow-sm py-20 gap-3">
+            <p className="text-base font-extrabold text-gray-700">
+              Belum ada murid
+            </p>
+            <p className="text-sm text-gray-400">
+              Wali ini belum memiliki anak yang terdaftar.
+            </p>
+          </div>
+        ) : (
+          <SantriTable siswaList={muridList} onRefresh={refetch} />
+        )}
       </main>
 
       {showModal && (
@@ -67,6 +83,7 @@ export default function DetailWali() {
           onClose={() => setShowModal(false)}
           onSuccess={() => {
             setShowModal(false);
+            refetch();
           }}
         />
       )}
