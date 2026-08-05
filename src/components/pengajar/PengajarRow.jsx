@@ -71,13 +71,13 @@ export default function PengajarRow({ u, onEdit, onDelete }) {
                 onClick={() => { setOpen(false); onEdit(u); }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
               >
-                ✏️ Edit
+                 Edit
               </button>
               <button
                 onClick={() => { setOpen(false); onDelete(u); }}
                 className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
               >
-                🗑️ Hapus
+                 Hapus
               </button>
             </div>
           )}

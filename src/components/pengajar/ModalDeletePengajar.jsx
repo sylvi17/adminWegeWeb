@@ -15,7 +15,7 @@ export default function ModalDeletePengajar({ pengajar, onClose, onSuccess }) {
       const msg = err.message ?? "";
       if (msg.includes("Foreign key") || msg.includes("guruId")) {
         setError(
-          "Pengajar ini masih memiliki murid terdaftar. Pindahkan atau hapus murid terlebih dahulu sebelum menghapus pengajar."
+          "Pengajar ini masih memiliki murid terdaftar. Pindahkan atau arsip murid terlebih dahulu sebelum mengarsipkan pengajar."
         );
       } else {
         setError(msg || "Gagal menghapus pengajar.");

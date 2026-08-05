@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { muridController } from "../../controller/muridController";
+import { guruController } from "../../controller/guruController";
 
-const JILID_OPTIONS = ["JILID_1", "JILID_2", "JILID_3", "JILID_4", "JILID_5", "JILID_6"];
+const JILID_OPTIONS = [
+  "JILID_1",
+  "JILID_2",
+  "JILID_3",
+  "JILID_4",
+  "JILID_5",
+  "JILID_6",
+];
 
 function hitungUmur(tanggal_lahir) {
   if (!tanggal_lahir) return null;
@@ -10,12 +18,12 @@ function hitungUmur(tanggal_lahir) {
   let umur = sekarang.getFullYear() - lahir.getFullYear();
   const belumUlangTahun =
     sekarang.getMonth() < lahir.getMonth() ||
-    (sekarang.getMonth() === lahir.getMonth() && sekarang.getDate() < lahir.getDate());
+    (sekarang.getMonth() === lahir.getMonth() &&
+      sekarang.getDate() < lahir.getDate());
   if (belumUlangTahun) umur--;
   return umur;
 }
 
-// "JILID 4" → "JILID_4" (kembalikan ke format Prisma)
 function reverseFormatJilid(jilid) {
   if (!jilid) return "";
   return jilid.replace(/ /g, "_");
@@ -23,15 +31,16 @@ function reverseFormatJilid(jilid) {
 
 export default function ModalEditMurid({ murid, onClose, onSuccess }) {
   const [form, setForm] = useState({
-    nama:          murid.nama         ?? "",
-    umur:          murid.umur         ?? "",
+    nama: murid.nama ?? "",
+    umur: murid.umur ?? "",
     tanggal_lahir: "",
-    jenisKelamin:  murid.jenisKelamin ?? "",
-    // ← reverse format agar match dengan JILID_OPTIONS
+    jenisKelamin: murid.jenisKelamin ?? "",
     jilidSekarang: reverseFormatJilid(murid.jilid ?? ""),
+    guruId: murid.guru?.id ?? "",
   });
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState(null);
+  const [guruList, setGuruList] = useState([]);
+  const [error, setError] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -46,7 +55,10 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
       return;
     }
 
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "guruId" ? Number(value) : value,
+    }));
   }
 
   async function handleSubmit() {
@@ -65,15 +77,31 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
       setLoading(false);
     }
   }
+  useEffect(() => {
+    async function fetchGuru() {
+      try {
+        const data = await guruController.getAll();
+        setGuruList(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchGuru();
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-[18px] shadow-2xl w-full max-w-md mx-4">
-
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-extrabold text-gray-900">Edit Murid</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none transition">✕</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl leading-none transition"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Body */}
@@ -93,7 +121,10 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
 
           <div>
             <label className="text-xs text-gray-400 font-semibold mb-1 block">
-              Tanggal Lahir <span className="text-gray-300">(opsional, untuk update umur)</span>
+              Tanggal Lahir{" "}
+              <span className="text-gray-300">
+                (opsional, untuk update umur)
+              </span>
             </label>
             <input
               name="tanggal_lahir"
@@ -103,7 +134,10 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 text-gray-700"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Umur saat ini: <span className="font-bold text-gray-600">{form.umur || 0} tahun</span>
+              Umur saat ini:{" "}
+              <span className="font-bold text-gray-600">
+                {form.umur || 0} tahun
+              </span>
             </p>
           </div>
 
@@ -117,14 +151,18 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
               onChange={handleChange}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-600"
             >
-              <option value="" disabled>Pilih</option>
+              <option value="" disabled>
+                Pilih
+              </option>
               <option value="LAKI_LAKI">Laki-laki</option>
               <option value="PEREMPUAN">Perempuan</option>
             </select>
           </div>
 
           <div>
-            <label className="text-xs text-gray-400 font-semibold mb-1 block">Jilid Saat Ini</label>
+            <label className="text-xs text-gray-400 font-semibold mb-1 block">
+              Jilid Saat Ini
+            </label>
             <select
               name="jilidSekarang"
               value={form.jilidSekarang}
@@ -135,6 +173,27 @@ export default function ModalEditMurid({ murid, onClose, onSuccess }) {
               {JILID_OPTIONS.map((j) => (
                 <option key={j} value={j}>
                   {j.replace(/_/g, " ")}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs text-gray-400 font-semibold mb-1 block">
+              Guru
+            </label>
+
+            <select
+              name="guruId"
+              value={form.guruId}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300 bg-white text-gray-600"
+            >
+              <option value="">Pilih Guru</option>
+
+              {guruList.map((guru) => (
+                <option key={guru.id} value={guru.id}>
+                  {guru.nama}
                 </option>
               ))}
             </select>
