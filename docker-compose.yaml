@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+
+  admin:
+
+    build: .
+
+    container_name: tpq-admin
+
+    restart: always
+
+    ports:
+      - "3001:80"
