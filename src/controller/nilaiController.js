@@ -25,6 +25,9 @@ export const nilaiController = {
       jenisPenilaian: n.jenisPenilaian,
       statusKelulusan: n.statusKelulusan ?? "-",
       catatan: n.catatan ?? "-",
+      // tanggal mentah (ISO/string asli dari API) — dipakai untuk filter/perhitungan
+      tanggalRaw: n.tanggal,
+      // tanggal terformat — dipakai untuk tampilan di tabel
       tanggal: new Date(n.tanggal).toLocaleDateString("id-ID", {
         day: "numeric",
         month: "short",

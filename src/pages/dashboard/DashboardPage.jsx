@@ -23,7 +23,7 @@ export default function DashboardPage() {
     async function fetchStats() {
       setLoadingStats(true);
       try {
-        const [guruRes, waliList, muridRes, laporanRes] = await Promise.all([
+        const [guruRes, waliList, muridRes, laporanList] = await Promise.all([
           guruService.getAll(),
           waliController.getAll(),
           muridService.getAll(),
@@ -35,13 +35,12 @@ export default function DashboardPage() {
           (m) => m.guruId !== null
         ).length;
 
-        // filter laporan yang dibuat di bulan & tahun berjalan
+        // filter laporan (nilai) yang dibuat di bulan & tahun berjalan
         const now = new Date();
-        const laporanList = laporanRes?.data ?? laporanRes ?? [];
 
         const jumlahLaporanBulanIni = laporanList.filter((item) => {
-          // ganti "createdAt" kalau nama field tanggal di API-mu berbeda
-          const tanggal = new Date(item.createdAt);
+          if (!item.tanggalRaw) return false;
+          const tanggal = new Date(item.tanggalRaw);
           return (
             tanggal.getMonth() === now.getMonth() &&
             tanggal.getFullYear() === now.getFullYear()

@@ -73,8 +73,8 @@ export const waliController = {
     return res.data;
   },
 
-  deleteWali: async (id) => {
-    const res = await waliService.delete(id);
+  deleteWali: async (id, nama) => {
+    const res = await waliService.delete(id, nama);
     return res.data;
   },
 };

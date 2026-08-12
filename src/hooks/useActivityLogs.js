@@ -1,10 +1,29 @@
 import { useEffect, useState } from "react";
 import { getActivityLogs } from "../services/activityService";
 
+const CACHE_KEY = "deletedUserNames";
+
+function getCachedUserName(userId) {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    const cache = raw ? JSON.parse(raw) : {};
+    return cache[String(userId)] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // helper untuk format teks yang mengandung underscore (misal: WALI_MURID -> WALI MURID)
 function formatDescription(description) {
   if (!description) return "-";
-  return description.replace(/_/g, " ");
+
+  // Ganti pola "user id <angka>" dengan nama dari cache jika tersedia
+  const replaced = description.replace(/user id (\d+)/i, (match, id) => {
+    const nama = getCachedUserName(id);
+    return nama ? `user: ${nama}` : match;
+  });
+
+  return replaced.replace(/_/g, " ");
 }
 
 export default function useActivityLogs() {

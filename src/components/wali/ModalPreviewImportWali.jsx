@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ModalPreviewImportWali({
   data,
@@ -63,36 +63,16 @@ export default function ModalPreviewImportWali({
   const valid = validData.length;
   const invalid = total - valid;
 
-  const handleImport = async () => {
-    if (validData.length === 0) return;
-
-    try {
-      setLoading(true);
-      setProgress(10);
-
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 90) return prev;
-          return prev + 10;
-        });
-      }, 200);
-
-      await onImport(validData);
-
-      clearInterval(interval);
-
-      setProgress(100);
-
-      setTimeout(() => {
-        setLoading(false);
-        setProgress(0);
+  // Auto-close modal setelah import selesai & hasil ditampilkan sebentar
+  useEffect(() => {
+    if (!loading && importResult && importResult.length > 0) {
+      const timer = setTimeout(() => {
         onClose();
-      }, 500);
-    } catch (err) {
-      setLoading(false);
-      setProgress(0);
+      }, 1500); // beri waktu user melihat hasil sebelum modal tertutup otomatis
+
+      return () => clearTimeout(timer);
     }
-  };
+  }, [loading, importResult, onClose]);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
