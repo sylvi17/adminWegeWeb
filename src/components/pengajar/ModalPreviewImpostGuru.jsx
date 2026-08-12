@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export default function ModalPreviewImportGuru({
   data,
   existingEmails,
@@ -37,6 +39,17 @@ export default function ModalPreviewImportGuru({
   const total = validatedData.length;
   const valid = validatedData.filter((x) => x.valid).length;
   const invalid = total - valid;
+
+  // Auto-close modal setelah import selesai & hasil ditampilkan sebentar
+  useEffect(() => {
+    if (!importing && importResult && importResult.length > 0) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 1500); // beri waktu user melihat hasil sebelum modal tertutup otomatis
+
+      return () => clearTimeout(timer);
+    }
+  }, [importing, importResult, onClose]);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -136,54 +149,67 @@ export default function ModalPreviewImportGuru({
           </table>
         </div>
 
+        {/* Progress bar saat sedang import */}
+        {importing && (
+          <div className="px-6 pb-4">
+            <div className="flex justify-between text-sm mb-2">
+              <span>Mengimpor data...</span>
+              <span>{progress}%</span>
+            </div>
+
+            <div className="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
+              <div
+                className="h-full bg-teal-500 transition-all duration-300"
+                style={{
+                  width: `${progress}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Ringkasan hasil import */}
+        {importResult && (
+          <div className="mx-6 mb-4 rounded-xl bg-gray-50 p-4 space-y-2">
+            <div className="font-bold">Hasil Import</div>
+
+            <div className="text-green-600">
+              Berhasil : {importResult.filter((r) => r.success).length}
+            </div>
+
+            <div className="text-red-500">
+              Gagal : {importResult.filter((r) => !r.success).length}
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="border-t p-5 flex justify-end gap-3">
           <button
+            disabled={importing}
             onClick={onClose}
-            className="px-5 py-2 rounded-lg border hover:bg-gray-100"
+            className="px-5 py-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50"
           >
             Batal
           </button>
-          {importing && (
-            <div className="mb-5">
-              <div className="flex justify-between text-sm mb-2">
-                <span>Mengimpor data...</span>
-                <span>{progress}%</span>
-              </div>
 
-              <div className="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
-                <div
-                  className="h-full bg-teal-500 transition-all duration-300"
-                  style={{
-                    width: `${progress}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          {importResult && (
-            <div className="rounded-xl bg-gray-50 p-4 space-y-2">
-              <div className="font-bold">Hasil Import</div>
-
-              <div className="text-green-600">
-                Berhasil :{importResult.filter((r) => r.success).length}
-              </div>
-
-              <div className="text-red-500">
-                Gagal :{importResult.filter((r) => !r.success).length}
-              </div>
-            </div>
-          )}
           <button
-            disabled={importing}
+            disabled={importing || valid === 0}
             onClick={onImport}
             className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
-              invalid > 0
+              valid === 0 || importing
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-teal-500 hover:bg-teal-600"
             }`}
           >
-            {importing ? "Mengimpor..." : "Import"}
+            {importing ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Mengimpor...
+              </div>
+            ) : (
+              `Import (${valid})`
+            )}
           </button>
         </div>
       </div>

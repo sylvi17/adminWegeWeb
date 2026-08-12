@@ -1,4 +1,7 @@
-export default function PengajarHeader({ onTambah, onExcel, handleDownloadTemplate}) {
+const BTN_CLASS =
+  "rounded-full bg-[#1a5c54] py-3 text-white font-bold shadow-md hover:bg-[#26a69a] transition w-44 text-center";
+
+export default function PengajarHeader({ onTambah, onExcel, handleDownloadTemplate }) {
   return (
     <header className="flex items-center justify-between">
       <div>
@@ -9,25 +12,19 @@ export default function PengajarHeader({ onTambah, onExcel, handleDownloadTempla
           Kelola informasi guru dan pembimbing TPQ
         </p>
       </div>
-      <button
-        onClick={onExcel}
-        className="rounded-full bg-[#1a5c54] px-6 py-3 text-white font-bold shadow-md hover:bg-[#26a69a] transition"
-      >
-       Import Excel
-      </button>
-      <button
-        onClick={handleDownloadTemplate}
-        className="rounded-full bg-[#1a5c54] px-6 py-3 text-white font-bold shadow-md hover:bg-[#26a69a] transition"
-      >
-        Download Template
-      </button>
 
-      <button
-        onClick={onTambah}
-        className="rounded-full bg-[#1a5c54] px-6 py-3 text-white font-bold shadow-md hover:bg-[#26a69a] transition"
-      >
-        + Tambah Pengajar Baru
-      </button>
+      {/* Grup tombol rata kanan, ukuran seragam */}
+      <div className="flex items-center gap-3">
+        <button onClick={onExcel} className={BTN_CLASS}>
+          Import Excel
+        </button>
+        <button onClick={handleDownloadTemplate} className={BTN_CLASS}>
+          Download Template
+        </button>
+        <button onClick={onTambah} className={BTN_CLASS}>
+          + Tambah Pengajar
+        </button>
+      </div>
     </header>
   );
 }

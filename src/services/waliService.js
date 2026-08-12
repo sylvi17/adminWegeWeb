@@ -5,5 +5,8 @@ export const waliService = {
   create: (formData) => apiClient.post("/admin/users", formData),
   update: (id, formData) => apiClient.put(`/admin/users/${id}`, formData),
 
-  delete: (id) => apiClient.delete(`/admin/users/${id}`),
+  delete: (id, nama) =>
+    apiClient.delete(`/admin/users/${id}`, {
+      data: { nama, role: "WALI" },
+    }),
 };

@@ -1,6 +1,20 @@
 import { useState } from "react";
 import { waliController } from "../../controller/waliController";
 
+const CACHE_KEY = "deletedUserNames";
+
+function cacheUserName(userId, nama) {
+  if (!userId || !nama) return;
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    const cache = raw ? JSON.parse(raw) : {};
+    cache[String(userId)] = nama;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  } catch {
+    // localStorage penuh atau tidak tersedia, aman diabaikan
+  }
+}
+
 export default function ModalDeleteWali({ wali, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -9,7 +23,10 @@ export default function ModalDeleteWali({ wali, onClose, onSuccess }) {
     setLoading(true);
     setError(null);
     try {
-      await waliController.deleteWali(wali.id);
+      // Simpan nama ke cache SEBELUM data dihapus dari server
+      cacheUserName(wali.userId ?? wali.id, wali.nama);
+
+      await waliController.deleteWali(wali.id, wali.nama);
       onSuccess();
       onClose();
     } catch (err) {
